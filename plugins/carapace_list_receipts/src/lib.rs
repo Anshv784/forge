@@ -29,15 +29,23 @@ fn default_limit() -> u32 {
     5
 }
 
-fn split_url(url: &str) -> Result<(String, String), String> {
-    let rest = url.strip_prefix("https://").ok_or("only https:// RPC URLs are supported")?;
+/// `http://` is only meant for pointing at a local validator
+/// (surfpool/solana-test-validator) during development.
+fn split_url(url: &str) -> Result<(Scheme, String, String), String> {
+    let (scheme, rest) = if let Some(rest) = url.strip_prefix("https://") {
+        (Scheme::Https, rest)
+    } else if let Some(rest) = url.strip_prefix("http://") {
+        (Scheme::Http, rest)
+    } else {
+        return Err("rpc_url must start with http:// or https://".to_string());
+    };
     match rest.find('/') {
-        Some(idx) => Ok((rest[..idx].to_string(), rest[idx..].to_string())),
-        None => Ok((rest.to_string(), "/".to_string())),
+        Some(idx) => Ok((scheme, rest[..idx].to_string(), rest[idx..].to_string())),
+        None => Ok((scheme, rest.to_string(), "/".to_string())),
     }
 }
 
-fn http_post_json(authority: &str, path: &str, body: &[u8]) -> Result<Vec<u8>, String> {
+fn http_post_json(scheme: &Scheme, authority: &str, path: &str, body: &[u8]) -> Result<Vec<u8>, String> {
     let headers = Fields::new();
     headers
         .append("content-type", &b"application/json".to_vec())
@@ -45,7 +53,7 @@ fn http_post_json(authority: &str, path: &str, body: &[u8]) -> Result<Vec<u8>, S
 
     let request = OutgoingRequest::new(headers);
     request.set_method(&Method::Post).map_err(|_| "set_method failed")?;
-    request.set_scheme(Some(&Scheme::Https)).map_err(|_| "set_scheme failed")?;
+    request.set_scheme(Some(scheme)).map_err(|_| "set_scheme failed")?;
     request.set_authority(Some(authority)).map_err(|_| "set_authority failed")?;
     request
         .set_path_with_query(Some(path))
@@ -94,8 +102,8 @@ fn http_post_json(authority: &str, path: &str, body: &[u8]) -> Result<Vec<u8>, S
     Ok(data)
 }
 
-fn rpc_call(authority: &str, path: &str, request_body: &Value) -> Result<Value, String> {
-    let response_bytes = http_post_json(authority, path, request_body.to_string().as_bytes())?;
+fn rpc_call(scheme: &Scheme, authority: &str, path: &str, request_body: &Value) -> Result<Value, String> {
+    let response_bytes = http_post_json(scheme, authority, path, request_body.to_string().as_bytes())?;
     let response: Value =
         serde_json::from_slice(&response_bytes).map_err(|e| format!("invalid RPC response JSON: {e}"))?;
     rpc::parse_result(&response).map(|v| v.clone())
@@ -103,14 +111,14 @@ fn rpc_call(authority: &str, path: &str, request_body: &Value) -> Result<Value, 
 
 fn run(args_json: &str) -> Result<String, String> {
     let args: Args = serde_json::from_str(args_json).map_err(|e| format!("invalid arguments: {e}"))?;
-    let (authority, path) = split_url(&args.rpc_url)?;
+    let (scheme, authority, path) = split_url(&args.rpc_url)?;
 
     let program_id = Pubkey::from_base58(&args.program_id).map_err(|_| "invalid program_id".to_string())?;
     let owner = Pubkey::from_base58(&args.owner).map_err(|_| "invalid owner".to_string())?;
     let (policy_address, _bump) = policy_pda(&program_id, &owner, args.agent_index);
     let limit = args.limit.clamp(1, 25);
 
-    let signatures_result = rpc_call(&authority, &path, &rpc::get_signatures_for_address(1, &policy_address.to_base58(), limit))?;
+    let signatures_result = rpc_call(&scheme, &authority, &path, &rpc::get_signatures_for_address(1, &policy_address.to_base58(), limit))?;
     let signatures = signatures_result.as_array().cloned().unwrap_or_default();
 
     let mut events = Vec::new();
@@ -123,7 +131,7 @@ fn run(args_json: &str) -> Result<String, String> {
         }
         let block_time = entry.get("blockTime").and_then(|t| t.as_i64());
 
-        let tx_result = rpc_call(&authority, &path, &rpc::get_transaction(2 + i as u64, signature))?;
+        let tx_result = rpc_call(&scheme, &authority, &path, &rpc::get_transaction(2 + i as u64, signature))?;
         let logs: Vec<String> = tx_result
             .get("meta")
             .and_then(|m| m.get("logMessages"))

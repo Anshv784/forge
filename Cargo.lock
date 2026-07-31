@@ -329,6 +329,17 @@ dependencies = [
 ]
 
 [[package]]
+name = "carapace_execute_transfer"
+version = "0.1.0"
+dependencies = [
+ "borsh",
+ "serde",
+ "serde_json",
+ "solana-core",
+ "wit-bindgen-rt",
+]
+
+[[package]]
 name = "carapace_list_receipts"
 version = "0.1.0"
 dependencies = [
@@ -345,6 +356,18 @@ dependencies = [
  "borsh",
  "serde",
  "serde_json",
+ "solana-core",
+ "wit-bindgen-rt",
+]
+
+[[package]]
+name = "carapace_propose_intent"
+version = "0.1.0"
+dependencies = [
+ "borsh",
+ "serde",
+ "serde_json",
+ "sha2 0.10.9",
  "solana-core",
  "wit-bindgen-rt",
 ]

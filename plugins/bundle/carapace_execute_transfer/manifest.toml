@@ -1,0 +1,9 @@
+name = "carapace_execute_transfer"
+version = "0.1.0"
+description = "Executes a SOL or SPL transfer from a Carapace vault, enforced on-chain by the policy's per-transaction cap, daily cap, destination allow-list, and (above the threshold) a matching approved Intent."
+author = "Carapace"
+wasm_path = "carapace_execute_transfer.wasm"
+capabilities = ["tool"]
+permissions = ["http_client"]
+signature = "R1maXKBj4iP7seYvbJRkJYSAEWuRiYc6iDHTSkOy7gBWcFqgP61ur2xUgwpwYXRSIaJDx1QSde_7oZH_v7KjAw"
+publisher_key = "d67e375ed163d6ae4b67ec55b2822bb97e657d4dbb723cc9abcd060fb4aac86a"

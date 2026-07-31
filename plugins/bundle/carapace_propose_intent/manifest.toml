@@ -1,0 +1,9 @@
+name = "carapace_propose_intent"
+version = "0.1.0"
+description = "Proposes an on-chain Intent for a Carapace transfer above the policy's approval threshold, which a human must approve before it can be executed."
+author = "Carapace"
+wasm_path = "carapace_propose_intent.wasm"
+capabilities = ["tool"]
+permissions = ["http_client"]
+signature = "La8g-p_L9v94Bx9AM7-veTaKkc-WzqoSHz9h5xZ1vvPeW_OPyO4dfHzDMz9rHfyPvq0Jb5EuSmkvFb5U03-jCQ"
+publisher_key = "d67e375ed163d6ae4b67ec55b2822bb97e657d4dbb723cc9abcd060fb4aac86a"

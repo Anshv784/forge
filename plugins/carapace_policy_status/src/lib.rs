@@ -23,17 +23,24 @@ struct Args {
     agent_index: u16,
 }
 
-/// Splits a `https://host[:port]/path` URL into (authority, path) for the
-/// WASI HTTP request builder, which wants scheme/authority/path separately.
-fn split_url(url: &str) -> Result<(String, String), String> {
-    let rest = url.strip_prefix("https://").ok_or("only https:// RPC URLs are supported")?;
+/// Splits a `http(s)://host[:port]/path` URL into (scheme, authority, path)
+/// for the WASI HTTP request builder. `http://` is only meant for pointing
+/// at a local validator (surfpool/solana-test-validator) during development.
+fn split_url(url: &str) -> Result<(Scheme, String, String), String> {
+    let (scheme, rest) = if let Some(rest) = url.strip_prefix("https://") {
+        (Scheme::Https, rest)
+    } else if let Some(rest) = url.strip_prefix("http://") {
+        (Scheme::Http, rest)
+    } else {
+        return Err("rpc_url must start with http:// or https://".to_string());
+    };
     match rest.find('/') {
-        Some(idx) => Ok((rest[..idx].to_string(), rest[idx..].to_string())),
-        None => Ok((rest.to_string(), "/".to_string())),
+        Some(idx) => Ok((scheme, rest[..idx].to_string(), rest[idx..].to_string())),
+        None => Ok((scheme, rest.to_string(), "/".to_string())),
     }
 }
 
-fn http_post_json(authority: &str, path: &str, body: &[u8]) -> Result<Vec<u8>, String> {
+fn http_post_json(scheme: &Scheme, authority: &str, path: &str, body: &[u8]) -> Result<Vec<u8>, String> {
     let headers = Fields::new();
     headers
         .append("content-type", &b"application/json".to_vec())
@@ -41,7 +48,7 @@ fn http_post_json(authority: &str, path: &str, body: &[u8]) -> Result<Vec<u8>, S
 
     let request = OutgoingRequest::new(headers);
     request.set_method(&Method::Post).map_err(|_| "set_method failed")?;
-    request.set_scheme(Some(&Scheme::Https)).map_err(|_| "set_scheme failed")?;
+    request.set_scheme(Some(scheme)).map_err(|_| "set_scheme failed")?;
     request.set_authority(Some(authority)).map_err(|_| "set_authority failed")?;
     request
         .set_path_with_query(Some(path))
@@ -92,14 +99,14 @@ fn http_post_json(authority: &str, path: &str, body: &[u8]) -> Result<Vec<u8>, S
 
 fn run(args_json: &str) -> Result<String, String> {
     let args: Args = serde_json::from_str(args_json).map_err(|e| format!("invalid arguments: {e}"))?;
-    let (authority, path) = split_url(&args.rpc_url)?;
+    let (scheme, authority, path) = split_url(&args.rpc_url)?;
 
     let program_id = Pubkey::from_base58(&args.program_id).map_err(|_| "invalid program_id".to_string())?;
     let owner = Pubkey::from_base58(&args.owner).map_err(|_| "invalid owner".to_string())?;
     let (policy_address, _bump) = policy_pda(&program_id, &owner, args.agent_index);
 
     let request_body = rpc::get_account_info(1, &policy_address.to_base58());
-    let response_bytes = http_post_json(&authority, &path, request_body.to_string().as_bytes())?;
+    let response_bytes = http_post_json(&scheme, &authority, &path, request_body.to_string().as_bytes())?;
     let response: serde_json::Value =
         serde_json::from_slice(&response_bytes).map_err(|e| format!("invalid RPC response JSON: {e}"))?;
     let result = rpc::parse_result(&response)?;

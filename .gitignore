@@ -6,6 +6,7 @@ Cargo.lock.bak
 # Anchor
 .anchor/
 test-ledger/
+.surfpool/
 
 # Node / Next.js
 node_modules/
