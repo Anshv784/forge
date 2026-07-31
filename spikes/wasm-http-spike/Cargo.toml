@@ -1,0 +1,26 @@
+[package]
+name = "wasm-http-spike"
+version = "0.1.0"
+edition.workspace = true
+license.workspace = true
+repository.workspace = true
+
+[dependencies]
+wit-bindgen-rt = { version = "0.44.0", features = ["bitflags"] }
+
+[lib]
+crate-type = ["cdylib"]
+
+[package.metadata.component]
+package = "component:wasm-http-spike"
+
+[package.metadata.component.target.dependencies]
+"wasi:io" = { path = "wit/deps/io" }
+"wasi:clocks" = { path = "wit/deps/clocks" }
+"wasi:random" = { path = "wit/deps/random" }
+"wasi:filesystem" = { path = "wit/deps/filesystem" }
+"wasi:sockets" = { path = "wit/deps/sockets" }
+"wasi:cli" = { path = "wit/deps/cli" }
+"wasi:http" = { path = "wit/deps/http" }
+
+[package.metadata.component.dependencies]

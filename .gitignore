@@ -1,0 +1,37 @@
+# Rust
+/target
+**/target
+Cargo.lock.bak
+
+# Anchor
+.anchor/
+test-ledger/
+
+# Node / Next.js
+node_modules/
+.next/
+out/
+.turbo/
+*.tsbuildinfo
+npm-debug.log*
+tests-dist/
+
+# Env / secrets
+.env
+.env.local
+.env.*.local
+*.pem
+*keypair*.json
+!spikes/**/fixtures/*keypair*.json
+
+# OS
+.DS_Store
+
+# WASM build artifacts
+*.wasm
+!plugins/bundle/**/*.wasm
+
+# Editor
+.vscode/*
+!.vscode/extensions.json
+.idea/

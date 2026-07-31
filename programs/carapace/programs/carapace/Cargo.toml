@@ -1,0 +1,22 @@
+[package]
+name = "carapace"
+version = "0.1.0"
+description = "On-chain enforced spending guardrails and human-approval gate for autonomous ZeroClaw agent wallets"
+edition = "2021"
+publish = false
+
+[lib]
+crate-type = ["cdylib", "lib"]
+name = "carapace"
+
+[features]
+default = []
+cpi = ["no-entrypoint"]
+no-entrypoint = []
+no-idl = []
+no-log-ix-name = []
+idl-build = ["anchor-lang/idl-build", "anchor-spl/idl-build"]
+
+[dependencies]
+anchor-lang = "1.1"
+anchor-spl = "1.1"

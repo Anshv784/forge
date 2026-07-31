@@ -1,0 +1,12 @@
+package component:wasm-http-spike;
+
+world spike {
+    import wasi:http/outgoing-handler@0.2.2;
+
+    /// Returns the HTTP status code of a GET request as a diagnostic string,
+    /// or an error string. Proves outbound WASI HTTP works inside a
+    /// wasm32-wasip2 component under wasmtime's `-S http=y`, the same
+    /// mechanism ZeroClaw's own host wires up when a plugin manifest
+    /// requests the `http_client` permission.
+    export run: func() -> result<string, string>;
+}

@@ -1,0 +1,17 @@
+[package]
+name = "wasm-signing-spike"
+version = "0.1.0"
+edition = "2021"
+publish = false
+
+[[bin]]
+name = "spike"
+path = "src/main.rs"
+
+[dependencies]
+ed25519-dalek = { version = "2", features = ["alloc"] }
+curve25519-dalek = "4"
+sha2 = "0.10"
+bs58 = "0.5"
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
