@@ -1,0 +1,25 @@
+[package]
+name = "solana-core"
+version = "0.1.0"
+edition = "2021"
+publish = false
+description = "Minimal, dependency-light Solana transaction/signing primitives portable to wasm32-wasip2 — deliberately excludes solana-sdk/solana-client/reqwest/tokio."
+
+[dependencies]
+ed25519-dalek = { version = "2", features = ["alloc"] }
+curve25519-dalek = "4"
+sha2 = "0.10"
+bs58 = "0.5"
+base64 = "0.22"
+borsh = { version = "1", features = ["derive"] }
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+
+[dev-dependencies]
+# Native-only, test-only: cross-validates that our hand-rolled message/
+# transaction wire format is byte-for-byte identical to solana-sdk's own
+# output. Never pulled into the wasm32-wasip2 build (dev-dependencies are
+# excluded from non-test builds).
+solana-sdk = "3"
+solana-system-interface = { version = "3", features = ["bincode"] }
+bincode = "1"

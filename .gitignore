@@ -21,8 +21,10 @@ tests-dist/
 .env.local
 .env.*.local
 *.pem
+*.pkcs8
 *keypair*.json
 !spikes/**/fixtures/*keypair*.json
+.secrets/
 
 # OS
 .DS_Store

@@ -1,0 +1,13 @@
+[package]
+name = "sign-plugin-manifest"
+version = "0.1.0"
+edition = "2021"
+publish = false
+
+[[bin]]
+name = "sign-plugin-manifest"
+path = "src/main.rs"
+
+[dependencies]
+ring = "0.17"
+base64 = "0.22"

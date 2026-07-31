@@ -44,8 +44,8 @@ lifecycle and [`docs/SECURITY.md`](docs/SECURITY.md) for the threat model.
 | Day-0 spikes (`wasm32-wasip2` signing/HTTP, ZeroClaw plugin-host contract) | ✅ done — [`docs/SPIKES.md`](docs/SPIKES.md) |
 | Anchor program (policy, vaults, allow-list, Intent lifecycle, execute) | ✅ done, 12/12 tests passing — [`programs/carapace`](programs/carapace) |
 | Devnet deployment | ⏳ blocked on faucet funding in the dev environment — see [`docs/SETUP.md`](docs/SETUP.md#4-devnet-deployment-real-judge-visible-deployment) |
-| `solana-core` shared Rust crate | 🔜 next |
-| WASM tool-plugin bundle | 🔜 next |
+| `solana-core` shared Rust crate | ✅ done, 8/8 tests incl. byte-for-byte cross-check vs `solana-sdk` — [`plugins/solana-core`](plugins/solana-core) |
+| WASM tool-plugin bundle | 🚧 1/4 tools done and verified end-to-end against live devnet RPC — [`plugins/`](plugins/) |
 | Carapace Console (Next.js dashboard) | 🔜 planned |
 | Solana Actions/Blinks approval endpoint | 🔜 planned |
 | Stretch: Jupiter swap, Pyth USD caps, Squads multisig owner, Helius webhooks | 🔜 stretch |

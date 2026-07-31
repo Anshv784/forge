@@ -1,0 +1,70 @@
+package zeroclaw:plugin@0.1.0;
+
+interface types {
+    type json-string = string;
+}
+
+interface plugin-info {
+    plugin-name: func() -> string;
+    plugin-version: func() -> string;
+}
+
+interface logging {
+    use types.{json-string};
+
+    enum log-level {
+        trace, debug, info, warn, error,
+    }
+
+    enum plugin-action {
+        start, complete, fail, cancel, skip, timeout, retry, inbound, outbound,
+        send, receive, connect, disconnect, reconnect, spawn, kill, tick,
+        trigger, schedule, approve, reject, defer, read, write, delete,
+        list-action, query, invoke, dispatch, resolve, register, unregister,
+        load, save, migrate, validate, note, memory-audit,
+    }
+
+    enum plugin-outcome {
+        success, failure,
+    }
+
+    record plugin-event {
+        function-name: string,
+        action: plugin-action,
+        outcome: option<plugin-outcome>,
+        duration-ms: option<u64>,
+        attrs: option<json-string>,
+        message: string,
+    }
+
+    log-record: func(level: log-level, event: plugin-event);
+}
+
+interface tool {
+    use types.{json-string};
+
+    record tool-result {
+        success: bool,
+        output: string,
+        error: option<string>,
+    }
+
+    name: func() -> string;
+    description: func() -> string;
+    parameters-schema: func() -> json-string;
+    execute: func(args: json-string) -> result<tool-result, string>;
+}
+
+world tool-plugin {
+    import logging;
+    // Gated by the `http_client` PluginPermission in manifest.toml — see
+    // crates/zeroclaw-plugins/AGENTS.md: "HTTP support is wired through WASI
+    // HTTP when PluginPermission::HttpClient is granted." The base
+    // `tool-plugin` world's required shape is just `import logging; export
+    // plugin-info; export tool;`; this import is this component's own
+    // addition, satisfied by the host's linker only when the permission is
+    // present in the signed manifest.
+    import wasi:http/outgoing-handler@0.2.2;
+    export plugin-info;
+    export tool;
+}
