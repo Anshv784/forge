@@ -1,6 +1,7 @@
 [workspace]
 resolver = "2"
 members = [
+    "plugins/carapace_list_receipts",
     "plugins/carapace_policy_status",
     "plugins/solana-core",
     "scripts/sign-plugin-manifest",

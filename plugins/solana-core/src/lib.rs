@@ -9,6 +9,7 @@
 
 pub mod carapace;
 pub mod discriminator;
+pub mod events;
 pub mod instruction;
 pub mod keypair;
 pub mod message;

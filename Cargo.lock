@@ -329,6 +329,16 @@ dependencies = [
 ]
 
 [[package]]
+name = "carapace_list_receipts"
+version = "0.1.0"
+dependencies = [
+ "serde",
+ "serde_json",
+ "solana-core",
+ "wit-bindgen-rt",
+]
+
+[[package]]
 name = "carapace_policy_status"
 version = "0.1.0"
 dependencies = [

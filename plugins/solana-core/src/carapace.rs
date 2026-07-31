@@ -66,15 +66,17 @@ pub fn associated_token_address(owner: &Pubkey, mint: &Pubkey) -> Pubkey {
     .0
 }
 
-#[derive(Clone, Copy, PartialEq, Eq, Debug, BorshSerialize, BorshDeserialize)]
+#[derive(Clone, Copy, PartialEq, Eq, Debug, BorshSerialize, BorshDeserialize, serde::Serialize)]
 #[borsh(use_discriminant = true)]
+#[serde(rename_all = "lowercase")]
 pub enum AssetKind {
     Sol = 0,
     Spl = 1,
 }
 
-#[derive(Clone, Copy, PartialEq, Eq, Debug, BorshSerialize, BorshDeserialize)]
+#[derive(Clone, Copy, PartialEq, Eq, Debug, BorshSerialize, BorshDeserialize, serde::Serialize)]
 #[borsh(use_discriminant = true)]
+#[serde(rename_all = "lowercase")]
 pub enum IntentStatus {
     Pending = 0,
     Approved = 1,

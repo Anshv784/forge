@@ -1,0 +1,9 @@
+name = "carapace_list_receipts"
+version = "0.1.0"
+description = "Lists recent on-chain receipts (executed transfers, Intent approvals/denials) for a Carapace policy, decoded from Solana transaction logs — a verifiable audit trail independent of the agent host."
+author = "Carapace"
+wasm_path = "carapace_list_receipts.wasm"
+capabilities = ["tool"]
+permissions = ["http_client"]
+signature = "QN6iXR7Vcgug0L5x7NIzKK_leH7hqVR4v0mUiEn4bQ2eA72B_F8K_zb_WoAMRLJ6XwITSRgHYMZ_MWzHcCLuAw"
+publisher_key = "d67e375ed163d6ae4b67ec55b2822bb97e657d4dbb723cc9abcd060fb4aac86a"

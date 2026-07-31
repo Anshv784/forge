@@ -19,6 +19,9 @@ wit-deps/                Vendored wasi:{http,io,clocks,random,filesystem,cli,soc
                          these (rather than resolving from a live registry) matters.
 carapace_policy_status/  Tool: reads a Policy account, returns caps/allowance/pause
                          state as JSON. Read-only, no secrets.
+carapace_list_receipts/  Tool: decodes on-chain events (transfers, Intent
+                         approvals/denials) from transaction logs into a
+                         verifiable audit trail. Read-only, no secrets.
 bundle/                  The assembled, installable output: one directory per
                          plugin, each with manifest.toml (Ed25519-signed) + the
                          built .wasm + SKILL.md.
@@ -29,7 +32,7 @@ bundle/                  The assembled, installable output: one directory per
 | Tool | Status | Needs signing key? |
 |---|---|---|
 | `carapace_policy_status` | ✅ built, signed, verified end-to-end against live devnet RPC | No |
-| `carapace_list_receipts` | 🔜 planned | No |
+| `carapace_list_receipts` | ✅ built, signed, verified end-to-end against live devnet RPC | No |
 | `carapace_propose_intent` | 🔜 planned | Yes (delegate session key) |
 | `carapace_execute_transfer` | 🔜 planned | Yes (delegate session key) |
 
