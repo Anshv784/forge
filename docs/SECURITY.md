@@ -1,5 +1,22 @@
 # Security model
 
+## Review status
+
+Design reviewed independently before implementation (an architecture pass
+that caught the custodial-vault requirement below before any code was
+written — see the git history). Re-verified after implementation by
+re-reading every instruction against this document's claims, cross-checked
+with a systematic signer audit (every mutating instruction's required
+`Signer` matches its documented authority — owner-only, delegate-only, or
+deliberately permissionless — with no gaps). Exercised live, not just
+unit-tested: the full propose → approve → execute → replay-rejected
+lifecycle, plus per-tx/daily cap rejection, allow-list rejection, pause,
+and owner withdrawal, all ran against a real validator (see
+`plugins/README.md`'s "Verified integration test" and
+`programs/carapace/tests/carapace.spec.ts`). No external/third-party audit
+has been performed — treat this as a strong hackathon-grade review, not a
+substitute for one before any mainnet deployment with real funds.
+
 ## Threat model
 
 **What Carapace defends against:** a compromised ZeroClaw host, a jailbroken
