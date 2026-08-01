@@ -39,24 +39,30 @@ lifecycle and [`docs/SECURITY.md`](docs/SECURITY.md) for the threat model.
 
 ## Status
 
+Every row below is real, working code — not a design doc. The full
+propose → approve → execute → replay-rejected lifecycle has been run
+end to end against a live validator through the actual WASM components and
+the actual Blinks endpoint (see `plugins/README.md` and the commit history
+for the verified sequences).
+
 | Milestone | Status |
 |---|---|
 | Day-0 spikes (`wasm32-wasip2` signing/HTTP, ZeroClaw plugin-host contract) | ✅ done — [`docs/SPIKES.md`](docs/SPIKES.md) |
 | Anchor program (policy, vaults, allow-list, Intent lifecycle, execute) | ✅ done, 12/12 tests passing — [`programs/carapace`](programs/carapace) |
-| Devnet deployment | ⏳ blocked on faucet funding in the dev environment — see [`docs/SETUP.md`](docs/SETUP.md#4-devnet-deployment-real-judge-visible-deployment) |
-| `solana-core` shared Rust crate | ✅ done, 8/8 tests incl. byte-for-byte cross-check vs `solana-sdk` — [`plugins/solana-core`](plugins/solana-core) |
-| WASM tool-plugin bundle | 🚧 1/4 tools done and verified end-to-end against live devnet RPC — [`plugins/`](plugins/) |
-| Carapace Console (Next.js dashboard) | 🔜 planned |
-| Solana Actions/Blinks approval endpoint | 🔜 planned |
-| Stretch: Jupiter swap, Pyth USD caps, Squads multisig owner, Helius webhooks | 🔜 stretch |
+| `solana-core` shared Rust crate | ✅ done, cross-checked byte-for-byte vs `solana-sdk` and the real IDL — [`plugins/solana-core`](plugins/solana-core) |
+| WASM tool-plugin bundle (all 4 tools) | ✅ done — signed, verified end-to-end incl. replay rejection — [`plugins/`](plugins/) |
+| Carapace Console (Next.js dashboard) | ✅ done — policy view, allowance gauges, approve/deny, activity feed, spend chart, dark/light — [`apps/console`](apps/console) |
+| Solana Actions/Blinks approval endpoint | ✅ done — verified with a real signed, submitted, confirmed transaction |
+| Devnet deployment | ⏳ blocked on public-faucet rate limiting in the dev environment; fully scripted and one command away — see [`docs/SETUP.md`](docs/SETUP.md#4-devnet-deployment-real-judge-visible-deployment) |
+| Stretch: Jupiter swap, Pyth USD caps, Squads multisig owner, Helius webhooks | 🔜 not started |
 
 ## Repo layout
 
 ```
 programs/carapace/     Anchor program: Policy/Intent/AllowlistEntry accounts,
-                        vault-custodied transfers, tests (surfpool + ts-mocha)
-plugins/                solana-core shared crate + WASM tool components (WIP)
-apps/console/           Next.js dashboard + Blinks endpoint (WIP)
+                        vault-custodied transfers, tests (surfpool + mocha)
+plugins/                solana-core shared crate + the 4 WASM tool components
+apps/console/           Next.js dashboard + Blinks endpoint
 spikes/                 Day-0 feasibility spikes (signing, WASI HTTP, harness)
 docs/                   Architecture, security model, setup guide, spike notes
 ```
@@ -67,10 +73,14 @@ docs/                   Architecture, security model, setup guide, spike notes
 cd programs/carapace
 npm install
 anchor test        # spins up a local validator (surfpool), no funds needed
+
+cd ../../apps/console
+npm install
+npm run dev         # dashboard at http://localhost:3000
 ```
 
-Full setup (toolchain install, wallet, devnet deploy) in
-[`docs/SETUP.md`](docs/SETUP.md).
+Full setup (toolchain install, wallet, devnet deploy, dashboard env vars) in
+[`docs/SETUP.md`](docs/SETUP.md) and [`apps/console/README.md`](apps/console/README.md).
 
 ## License
 
