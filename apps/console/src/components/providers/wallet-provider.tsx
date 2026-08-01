@@ -1,5 +1,6 @@
 "use client";
 
+import "@/lib/buffer-polyfill";
 import { ConnectionProvider, WalletProvider as SolanaWalletProvider } from "@solana/wallet-adapter-react";
 import { WalletModalProvider } from "@solana/wallet-adapter-react-ui";
 import { useMemo } from "react";

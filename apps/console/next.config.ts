@@ -1,19 +1,20 @@
 import type { NextConfig } from "next";
 
+// No webpack/Turbopack bundler config needed: the Buffer polyfill
+// @solana/web3.js needs in the browser is wired up at runtime instead — see
+// src/lib/buffer-polyfill.ts — since Turbopack (Next.js 16's default
+// bundler) doesn't support webpack's ProvidePlugin.
 const nextConfig: NextConfig = {
-  webpack: (config, { isServer, webpack }) => {
-    // @solana/web3.js and friends assume a Node-like Buffer global; webpack 5
-    // no longer polyfills Node core modules automatically, so wire it up
-    // explicitly for the client bundle only.
-    if (!isServer) {
-      config.resolve.fallback = { ...config.resolve.fallback, buffer: require.resolve("buffer/") };
-      config.plugins.push(
-        new webpack.ProvidePlugin({
-          Buffer: ["buffer", "Buffer"],
-        })
-      );
-    }
-    return config;
+  async headers() {
+    return [
+      {
+        // Static files served from public/ don't go through our route
+        // handlers' own CORS headers, so actions.json needs it set here —
+        // Blink-aware clients fetch it directly to discover action routes.
+        source: "/actions.json",
+        headers: [{ key: "Access-Control-Allow-Origin", value: "*" }],
+      },
+    ];
   },
 };
 
