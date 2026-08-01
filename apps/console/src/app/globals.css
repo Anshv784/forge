@@ -1,0 +1,242 @@
+@import "tailwindcss";
+
+/* ---------------------------------------------------------------------
+   Carapace design tokens.
+
+   Warm, low-saturation palette (clay/copper accent on near-black or cream
+   neutrals) — deliberately not a default blue/violet SaaS gradient look.
+   Dark mode is primary (this is an operator console meant to sit open
+   during a normal dev workflow), but light mode gets equal care rather
+   than a naive inverted filter.
+   --------------------------------------------------------------------- */
+
+:root {
+  --background: #faf6ee;
+  --surface: #ffffff;
+  --surface-raised: #ffffff;
+  --border: #e7dfcf;
+  --border-strong: #d8cdb5;
+
+  --foreground: #221c12;
+  --foreground-muted: #6b6151;
+  --foreground-subtle: #968c79;
+
+  --accent: #b85c2c;
+  --accent-hover: #9d4c22;
+  --accent-foreground: #fff8f0;
+  --accent-tint: #f3e2d3;
+
+  --success: #4f7a3e;
+  --success-tint: #e4ecdd;
+  --warning: #a9781f;
+  --warning-tint: #f3e8cf;
+  --danger: #a8402f;
+  --danger-tint: #f2ded9;
+  --info: #3d7a76;
+  --info-tint: #dcece9;
+}
+
+[data-theme="dark"] {
+  --background: #14110c;
+  --surface: #1c1811;
+  --surface-raised: #241f16;
+  --border: #332a1d;
+  --border-strong: #493c28;
+
+  --foreground: #f4eee0;
+  --foreground-muted: #b7ac97;
+  --foreground-subtle: #837a67;
+
+  --accent: #dd8a4e;
+  --accent-hover: #e79c67;
+  --accent-foreground: #1c1006;
+  --accent-tint: #3a2717;
+
+  --success: #8fb578;
+  --success-tint: #26301e;
+  --warning: #e2b556;
+  --warning-tint: #362b14;
+  --danger: #d97a63;
+  --danger-tint: #3a2119;
+  --info: #79b3af;
+  --info-tint: #1c2f2d;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --background: #14110c;
+    --surface: #1c1811;
+    --surface-raised: #241f16;
+    --border: #332a1d;
+    --border-strong: #493c28;
+
+    --foreground: #f4eee0;
+    --foreground-muted: #b7ac97;
+    --foreground-subtle: #837a67;
+
+    --accent: #dd8a4e;
+    --accent-hover: #e79c67;
+    --accent-foreground: #1c1006;
+    --accent-tint: #3a2717;
+
+    --success: #8fb578;
+    --success-tint: #26301e;
+    --warning: #e2b556;
+    --warning-tint: #362b14;
+    --danger: #d97a63;
+    --danger-tint: #3a2119;
+    --info: #79b3af;
+    --info-tint: #1c2f2d;
+  }
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-surface: var(--surface);
+  --color-surface-raised: var(--surface-raised);
+  --color-border: var(--border);
+  --color-border-strong: var(--border-strong);
+
+  --color-foreground: var(--foreground);
+  --color-foreground-muted: var(--foreground-muted);
+  --color-foreground-subtle: var(--foreground-subtle);
+
+  --color-accent: var(--accent);
+  --color-accent-hover: var(--accent-hover);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-accent-tint: var(--accent-tint);
+
+  --color-success: var(--success);
+  --color-success-tint: var(--success-tint);
+  --color-warning: var(--warning);
+  --color-warning-tint: var(--warning-tint);
+  --color-danger: var(--danger);
+  --color-danger-tint: var(--danger-tint);
+  --color-info: var(--info);
+  --color-info-tint: var(--info-tint);
+
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+  --font-display: var(--font-fraunces);
+}
+
+* {
+  border-color: var(--border);
+}
+
+html {
+  color-scheme: light dark;
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-feature-settings: "cv11", "ss01";
+}
+
+::selection {
+  background: var(--accent-tint);
+  color: var(--accent);
+}
+
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: var(--border-strong);
+  border-radius: 999px;
+  border: 2px solid var(--background);
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--foreground-subtle);
+}
+
+@keyframes shell-pulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.45;
+  }
+}
+.animate-shell-pulse {
+  animation: shell-pulse 2s ease-in-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+  }
+}
+
+/* ---------------------------------------------------------------------
+   @solana/wallet-adapter-react-ui overrides — restyled to match the
+   Carapace palette instead of the library's default indigo/purple theme.
+   --------------------------------------------------------------------- */
+.wallet-adapter-button {
+  font-family: var(--font-sans) !important;
+  background-color: var(--accent) !important;
+  color: var(--accent-foreground) !important;
+  border-radius: 10px !important;
+  height: 40px !important;
+  font-size: 0.875rem !important;
+  font-weight: 500 !important;
+  transition: background-color 0.15s ease, transform 0.1s ease !important;
+}
+.wallet-adapter-button:not([disabled]):hover {
+  background-color: var(--accent-hover) !important;
+}
+.wallet-adapter-button:not([disabled]):active {
+  transform: scale(0.98);
+}
+.wallet-adapter-button-trigger {
+  background-color: var(--accent) !important;
+}
+.wallet-adapter-modal-wrapper {
+  background: var(--surface-raised) !important;
+  color: var(--foreground) !important;
+  border-radius: 16px !important;
+  border: 1px solid var(--border) !important;
+  box-shadow: 0 20px 60px -20px rgba(0, 0, 0, 0.45) !important;
+}
+.wallet-adapter-modal-title {
+  font-family: var(--font-display) !important;
+  color: var(--foreground) !important;
+}
+.wallet-adapter-modal-button-close {
+  background: var(--surface) !important;
+}
+.wallet-adapter-modal-list .wallet-adapter-button {
+  background-color: var(--surface) !important;
+  color: var(--foreground) !important;
+  border: 1px solid var(--border) !important;
+}
+.wallet-adapter-modal-list .wallet-adapter-button:hover {
+  background-color: var(--accent-tint) !important;
+  border-color: var(--accent) !important;
+}
+.wallet-adapter-modal-overlay {
+  background: rgba(10, 8, 5, 0.6) !important;
+  backdrop-filter: blur(4px);
+}
+.wallet-adapter-dropdown-list {
+  background: var(--surface-raised) !important;
+  border: 1px solid var(--border) !important;
+  border-radius: 12px !important;
+}
+.wallet-adapter-dropdown-list-item {
+  color: var(--foreground) !important;
+  font-family: var(--font-sans) !important;
+}
+.wallet-adapter-dropdown-list-item:not([disabled]):hover {
+  background-color: var(--accent-tint) !important;
+}
