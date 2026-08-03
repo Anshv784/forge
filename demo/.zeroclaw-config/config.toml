@@ -1,0 +1,49 @@
+schema_version = 3
+
+default_provider = "openai"
+
+[model_providers.openai]
+uri = "https://api.openai.com/v1"
+
+[skill_bundles.carapace]
+
+[agents.carapace_demo]
+provider = "openai"
+model = "gpt-4o-mini"
+temperature = 0.2
+skill_bundles = ["carapace"]
+
+[channels.telegram.default]
+enabled = true
+mention_only = false
+stream_mode = "partial"
+
+[autonomy]
+allowed_tools = [
+    "carapace_policy_status", "carapace_list_receipts",
+    "carapace_propose_intent", "carapace_execute_transfer"
+]
+auto_approve = [
+    "carapace_policy_status", "carapace_list_receipts", "carapace_propose_intent"
+]
+
+[plugins]
+enabled = true
+
+[plugins.security]
+signature_mode = "strict"
+trusted_publisher_keys = ["d67e375ed163d6ae4b67ec55b2822bb97e657d4dbb723cc9abcd060fb4aac86a"]
+
+[[plugins.entries]]
+name = "carapace_policy_status"
+
+[[plugins.entries]]
+name = "carapace_list_receipts"
+
+[[plugins.entries]]
+name = "carapace_propose_intent"
+
+[[plugins.entries]]
+name = "carapace_execute_transfer"
+
+[skill_bundles]

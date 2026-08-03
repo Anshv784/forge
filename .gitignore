@@ -12,6 +12,14 @@ test-ledger/
 # never vendored into this repo
 .zeroclaw-src/
 
+# Real ZeroClaw instance's runtime state for the demo — keep config.toml and
+# the skill (both committed explicitly below); everything else is either a
+# copy of plugins/bundle/ (installed via `zeroclaw plugin install`) or
+# ephemeral runtime data.
+demo/.zeroclaw-config/plugins/
+demo/.zeroclaw-config/data/
+demo/.zeroclaw-config/state/
+
 # Node / Next.js
 node_modules/
 .next/
