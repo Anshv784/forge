@@ -1,6 +1,6 @@
 // One-off manual script: approves a pending Intent so the execute_transfer
-// tool's above-threshold path can be exercised end-to-end locally.
-// Usage: node manual/approve-intent.js <nonce>
+// tool's above-threshold path can be exercised end-to-end.
+// Usage: node manual/approve-intent.js <nonce> [rpc_url]
 const anchor = require("@coral-xyz/anchor");
 const { Connection, Keypair, PublicKey } = require("@solana/web3.js");
 const fs = require("fs");
@@ -10,7 +10,8 @@ const IDL = require("../target/idl/carapace.json");
 
 async function main() {
   const nonce = BigInt(process.argv[2] ?? "0");
-  const connection = new Connection("http://127.0.0.1:8899", "confirmed");
+  const rpcUrl = process.argv[3] ?? "http://127.0.0.1:8899";
+  const connection = new Connection(rpcUrl, "confirmed");
   const walletKeypair = Keypair.fromSecretKey(
     Uint8Array.from(JSON.parse(fs.readFileSync(path.join(process.env.HOME, ".config/solana/id.json"), "utf8")))
   );
