@@ -2,21 +2,30 @@ schema_version = 3
 
 default_provider = "openai"
 
-[model_providers.openai]
+[providers.models.openai.default]
 uri = "https://api.openai.com/v1"
+model = "gpt-4o-mini"
+temperature = 0.2
 
 [skill_bundles.carapace]
 
-[agents.carapace_demo]
-provider = "openai"
-model = "gpt-4o-mini"
-temperature = 0.2
-skill_bundles = ["carapace"]
+[risk_profiles.default]
 
-[channels.telegram.default]
+[agents.carapace_demo]
+model_provider = "openai.default"
+risk_profile = "default"
+skill_bundles = ["carapace"]
+channels = ["discord.default"]
+
+[channels.discord.default]
 enabled = true
 mention_only = false
 stream_mode = "partial"
+
+[peer_groups.owner]
+channel = "discord.default"
+agents = ["carapace_demo"]
+external_peers = ["1374617356474777711"]
 
 [autonomy]
 allowed_tools = [

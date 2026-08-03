@@ -1,12 +1,15 @@
 # Carapace × ZeroClaw demo
 
-The real, running use case for the bounty showcase: a Telegram-resident
+The real, running use case for the bounty showcase: a Discord-resident
 ZeroClaw agent that proposes and executes Solana payments through Carapace's
-on-chain enforced guardrails, with the human approving from their phone.
+on-chain enforced guardrails, running against a real Carapace program on
+Solana devnet, with the human owner approving above-threshold transfers
+on-chain from their own wallet.
 
 This directory holds the demo-specific config and setup notes — the actual
 plugin code lives in `../plugins/`, the on-chain program in
 `../programs/carapace/`.
 
-Status: see the root README's status table. Filled in as each piece is
-verified against a real ZeroClaw binary built from source.
+See [`../docs/SHOWCASE.md`](../docs/SHOWCASE.md) for the full write-up: what
+was demonstrated, the custody tier and threat model, the prompt-injection
+test transcript, and every on-chain transaction signature as proof.

@@ -19,6 +19,8 @@ test-ledger/
 demo/.zeroclaw-config/plugins/
 demo/.zeroclaw-config/data/
 demo/.zeroclaw-config/state/
+demo/zeroclaw.log
+demo/zeroclaw.pid.txt
 
 # Node / Next.js
 node_modules/
