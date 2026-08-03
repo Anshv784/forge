@@ -4,6 +4,7 @@ import "./globals.css";
 import { ThemeProvider } from "@/components/providers/theme-provider";
 import { ClusterProvider } from "@/components/providers/cluster-provider";
 import { WalletProvider } from "@/components/providers/wallet-provider";
+import { ToastProvider } from "@/components/providers/toast-provider";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -56,7 +57,9 @@ export default function RootLayout({
       <body className="min-h-full flex flex-col bg-background text-foreground">
         <ThemeProvider>
           <ClusterProvider>
-            <WalletProvider>{children}</WalletProvider>
+            <WalletProvider>
+              <ToastProvider>{children}</ToastProvider>
+            </WalletProvider>
           </ClusterProvider>
         </ThemeProvider>
       </body>
