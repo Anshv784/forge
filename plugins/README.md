@@ -46,20 +46,35 @@ see "Verified integration test" below for the full propose → approve →
 execute → replay-rejected sequence, executed by these exact `.wasm` binaries
 through `wasmtime`, not mocked.
 
-**Design decision on the delegate's session key:** the two signing tools
-accept `delegate_secret_key` (32-byte hex) as a tool argument rather than
-reading it from a host-managed secrets channel. ZeroClaw's own
-`PluginPermission::ConfigRead` variant exists in their source, and
-`wasmtime run -S help` shows a `config[=y|n]` WASI option that's a plausible
-bridge for it, but nothing in `wit/v0/*.wit` confirms a config-read interface
-wired into the `tool-plugin` world specifically — building against an
-unconfirmed guess would be worse than shipping a working, honestly-documented
-interim design. This is also a reasonable belt-and-suspenders story on its
-own: even if this key were somehow exposed via the LLM's context, the
-on-chain policy — not secrecy of an ephemeral session key — is what actually
-bounds the damage. Migrating to a host-provided secret once ZeroClaw's config
-surface for WASM tools is confirmed is a small, isolated change (one function,
-`hex_decode_32`, per tool).
+**The delegate's session key never reaches the LLM.** Both signing tools
+declare the `config_read` permission and read `delegate_secret_key` from the
+reserved `__config` object ZeroClaw's host injects into the arguments at
+call time — confirmed directly from their source
+(`crates/zeroclaw-plugins/src/runtime.rs`'s `inject_config`): the host merges
+the plugin's resolved config section (encrypted at rest, per
+`PluginEntryConfig`'s `#[secret]` field in `crates/zeroclaw-config/src/schema.rs`)
+under `__config`, **stripping any value the caller/LLM tried to supply
+itself first** — so a compromised prompt cannot forge or read the signing
+key even in principle. The key isn't in the tool's parameter schema at all
+(the agent doesn't need to know it exists), and it never appears in the
+LLM's context or tool-call arguments. Configure it per-agent via:
+
+```toml
+[plugins]
+enabled = true
+
+[[plugins.entries]]
+name = "carapace_propose_intent"
+
+  [plugins.entries.config]
+  delegate_secret_key = "<32-byte hex seed>"
+
+[[plugins.entries]]
+name = "carapace_execute_transfer"
+
+  [plugins.entries.config]
+  delegate_secret_key = "<the same 32-byte hex seed>"
+```
 
 ## Installing a built plugin into ZeroClaw
 

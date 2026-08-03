@@ -15,6 +15,18 @@ use solana_core::{build_and_sign_transaction, rpc, Keypair};
 
 struct Component;
 
+/// Injected by ZeroClaw's host, never by the caller: when this plugin's
+/// manifest requests the `config_read` permission, the host merges the
+/// plugin's resolved (encrypted-at-rest) config section into the arguments
+/// under this reserved key, stripping any value the caller/LLM tried to
+/// supply itself first — see `crates/zeroclaw-plugins/src/runtime.rs`'s
+/// `inject_config` in ZeroClaw's own source. The agent's session key never
+/// appears in the LLM's tool-call arguments or context this way.
+#[derive(Deserialize)]
+struct PluginConfig {
+    delegate_secret_key: String,
+}
+
 #[derive(Deserialize)]
 struct Args {
     rpc_url: String,
@@ -22,10 +34,8 @@ struct Args {
     owner: String,
     #[serde(default)]
     agent_index: u16,
-    /// The agent's ephemeral session key (hex-encoded 32-byte Ed25519 seed).
-    /// See this crate's module doc for why this travels as a tool argument
-    /// today rather than through a host-managed secrets channel.
-    delegate_secret_key: String,
+    #[serde(rename = "__config")]
+    config: PluginConfig,
     /// "sol" or "spl".
     asset: String,
     /// Base units: lamports for SOL, the mint's smallest unit for SPL.
@@ -146,7 +156,7 @@ fn run(args_json: &str) -> Result<String, String> {
         "spl" => AssetKind::Spl,
         other => return Err(format!("asset must be \"sol\" or \"spl\", got {other:?}")),
     };
-    let delegate = Keypair::from_secret_bytes(&hex_decode_32(&args.delegate_secret_key)?);
+    let delegate = Keypair::from_secret_bytes(&hex_decode_32(&args.config.delegate_secret_key)?);
 
     let (policy_address, _bump) = policy_pda(&program_id, &owner, args.agent_index);
 
@@ -237,14 +247,13 @@ impl ToolGuest for Component {
                 "program_id": {"type": "string"},
                 "owner": {"type": "string", "description": "The policy owner's wallet address (base58)"},
                 "agent_index": {"type": "integer", "default": 0},
-                "delegate_secret_key": {"type": "string", "description": "This agent's session signing key, 32-byte hex"},
                 "asset": {"type": "string", "enum": ["sol", "spl"]},
                 "amount": {"type": "integer", "description": "Base units: lamports for SOL, smallest unit for SPL"},
                 "destination": {"type": "string", "description": "Recipient wallet address (base58); must already be allow-listed"},
                 "action_description": {"type": "string", "description": "Human-readable reason for this payment, shown to the approver"},
                 "ttl_seconds": {"type": "integer", "default": 3600, "description": "How long the approval window stays open"}
             },
-            "required": ["rpc_url", "program_id", "owner", "delegate_secret_key", "asset", "amount", "destination", "action_description"]
+            "required": ["rpc_url", "program_id", "owner", "asset", "amount", "destination", "action_description"]
         })
         .to_string()
     }

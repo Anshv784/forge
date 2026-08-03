@@ -8,6 +8,10 @@ Cargo.lock.bak
 test-ledger/
 .surfpool/
 
+# Third-party source checked out locally for the ZeroClaw integration spike —
+# never vendored into this repo
+.zeroclaw-src/
+
 # Node / Next.js
 node_modules/
 .next/
