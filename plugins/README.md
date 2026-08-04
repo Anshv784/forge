@@ -40,8 +40,18 @@ bundle/                  The assembled, installable output: one directory per
 | `carapace_list_receipts` | ✅ built, signed, verified end-to-end against live devnet RPC | No |
 | `carapace_propose_intent` | ✅ built, signed, verified end-to-end (local validator: real sign+submit) | Yes (delegate session key) |
 | `carapace_execute_transfer` | ✅ built, signed, verified end-to-end incl. replay rejection | Yes (delegate session key) |
+| `carapace_dry_run` | ✅ built, signed, verified end-to-end against live devnet RPC | No |
 
-All four tools are complete and were run against a real running validator —
+`carapace_dry_run` re-implements `execute.rs`'s `validate_spend` check order
+client-side (`solana-core::dry_run::evaluate`) to answer "would this
+transfer succeed right now?" with no transaction and no state change. It is
+a **second implementation** of that logic, not a call into the program, so
+it can disagree with reality — see the doc comment on `evaluate` in
+`plugins/solana-core/src/dry_run.rs` for the specific ways it can (mainly:
+time-of-check/time-of-use against concurrent transfers). Treat its verdict
+as advisory.
+
+All five tools are complete and were run against a real running validator —
 see "Verified integration test" below for the full propose → approve →
 execute → replay-rejected sequence, executed by these exact `.wasm` binaries
 through `wasmtime`, not mocked.

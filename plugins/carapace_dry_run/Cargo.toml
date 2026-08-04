@@ -1,0 +1,27 @@
+[package]
+name = "carapace_dry_run"
+version = "0.1.0"
+edition = "2021"
+publish = false
+
+[dependencies]
+solana-core = { path = "../solana-core" }
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+borsh = "1"
+wit-bindgen-rt = { version = "0.44.0", features = ["bitflags"] }
+
+[lib]
+crate-type = ["cdylib"]
+
+[package.metadata.component]
+package = "component:carapace-dry-run"
+
+[package.metadata.component.target.dependencies]
+"wasi:io" = { path = "../wit-deps/io" }
+"wasi:clocks" = { path = "../wit-deps/clocks" }
+"wasi:random" = { path = "../wit-deps/random" }
+"wasi:filesystem" = { path = "../wit-deps/filesystem" }
+"wasi:sockets" = { path = "../wit-deps/sockets" }
+"wasi:cli" = { path = "../wit-deps/cli" }
+"wasi:http" = { path = "../wit-deps/http" }

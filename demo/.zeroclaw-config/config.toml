@@ -29,11 +29,11 @@ external_peers = ["1374617356474777711"]
 
 [autonomy]
 allowed_tools = [
-    "carapace_policy_status", "carapace_list_receipts",
+    "carapace_policy_status", "carapace_list_receipts", "carapace_dry_run",
     "carapace_propose_intent", "carapace_execute_transfer"
 ]
 auto_approve = [
-    "carapace_policy_status", "carapace_list_receipts", "carapace_propose_intent"
+    "carapace_policy_status", "carapace_list_receipts", "carapace_dry_run", "carapace_propose_intent"
 ]
 
 [plugins]
@@ -45,6 +45,9 @@ trusted_publisher_keys = ["d67e375ed163d6ae4b67ec55b2822bb97e657d4dbb723cc9abcd0
 
 [[plugins.entries]]
 name = "carapace_policy_status"
+
+[[plugins.entries]]
+name = "carapace_dry_run"
 
 [[plugins.entries]]
 name = "carapace_list_receipts"

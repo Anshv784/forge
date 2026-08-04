@@ -329,6 +329,17 @@ dependencies = [
 ]
 
 [[package]]
+name = "carapace_dry_run"
+version = "0.1.0"
+dependencies = [
+ "borsh",
+ "serde",
+ "serde_json",
+ "solana-core",
+ "wit-bindgen-rt",
+]
+
+[[package]]
 name = "carapace_execute_transfer"
 version = "0.1.0"
 dependencies = [

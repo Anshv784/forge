@@ -1,0 +1,9 @@
+name = "carapace_dry_run"
+version = "0.1.0"
+description = "Checks whether a SOL or SPL transfer would succeed right now against a Carapace policy — allow-list, pause, per-tx cap, daily cap, approval threshold — without submitting anything. Advisory, not a lock: on-chain state can still change before a real execute."
+author = "Carapace"
+wasm_path = "carapace_dry_run.wasm"
+capabilities = ["tool"]
+permissions = ["http_client"]
+signature = "iLwrM276MG83F9ghsRSe-igBZt6gLuO83mmFrYAosAAE6U7FaXYUd3y6-TixMeiLmiQp-LBt0TjvPDPxNiORDg"
+publisher_key = "d67e375ed163d6ae4b67ec55b2822bb97e657d4dbb723cc9abcd060fb4aac86a"
