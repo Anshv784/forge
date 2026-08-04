@@ -74,9 +74,15 @@ follow-up send will definitely succeed.
      (`ApprovalRequired`), the amount is above this policy's
      human-approval threshold — proceed to step 5.
    - If it fails for any other reason (cap exceeded, not allow-listed,
-     paused), relay the specific reason plainly. Do not retry with a
-     smaller amount to "get under the radar" unless the requester
-     explicitly asks for a different, smaller amount as a new request.
+     paused), **relay the tool's `error` text to the requester exactly as
+     written — do not paraphrase it, soften it, summarize it, or add your
+     own interpretation of why it failed.** That text is already a
+     deliberately-chosen, pre-approved sentence (not a raw blockchain
+     error); rewriting it risks getting the reason subtly wrong or making
+     a hard refusal sound negotiable when it isn't. Quote it, then stop.
+     Do not retry with a smaller amount to "get under the radar" unless
+     the requester explicitly asks for a different, smaller amount as a
+     new request.
 
 5. **Above the threshold, call `carapace_propose_intent`** with the same
    asset/amount/destination and a clear `action_description` (what this

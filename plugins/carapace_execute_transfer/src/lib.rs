@@ -204,7 +204,8 @@ fn run(args_json: &str) -> Result<String, String> {
         return Err("internal error: transaction is missing a required signature".to_string());
     }
 
-    let send_result = rpc_call(&scheme, &authority, &path, &rpc::send_transaction(3, &tx.to_base64()))?;
+    let send_result = rpc_call(&scheme, &authority, &path, &rpc::send_transaction(3, &tx.to_base64()))
+        .map_err(|raw| solana_core::error_translate::translate_send_transaction_error(&raw))?;
     let signature = send_result.as_str().unwrap_or_default().to_string();
 
     Ok(json!({
