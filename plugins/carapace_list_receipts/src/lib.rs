@@ -5,9 +5,12 @@ use bindings::exports::zeroclaw::plugin::plugin_info::Guest as PluginInfoGuest;
 use bindings::exports::zeroclaw::plugin::tool::{Guest as ToolGuest, ToolResult};
 use bindings::wasi::http::outgoing_handler;
 use bindings::wasi::http::types::{Fields, Method, OutgoingBody, OutgoingRequest, Scheme};
+use borsh::BorshDeserialize;
 use serde::Deserialize;
 use serde_json::{json, Value};
-use solana_core::carapace::policy_pda;
+use solana_core::carapace::{policy_pda, Intent, IntentStatus};
+use solana_core::discriminator::account_discriminator;
+use solana_core::error_translate::translate_from_logs;
 use solana_core::events::decode_events_from_logs;
 use solana_core::pubkey::Pubkey;
 use solana_core::rpc;
@@ -122,14 +125,13 @@ fn run(args_json: &str) -> Result<String, String> {
     let signatures = signatures_result.as_array().cloned().unwrap_or_default();
 
     let mut events = Vec::new();
+    let mut failures = Vec::new();
     for (i, entry) in signatures.iter().enumerate() {
         let Some(signature) = entry.get("signature").and_then(|s| s.as_str()) else {
             continue;
         };
-        if entry.get("err").map(|e| !e.is_null()).unwrap_or(false) {
-            continue; // skip failed transactions — nothing executed on-chain to report
-        }
         let block_time = entry.get("blockTime").and_then(|t| t.as_i64());
+        let failed = entry.get("err").map(|e| !e.is_null()).unwrap_or(false);
 
         let tx_result = rpc_call(&scheme, &authority, &path, &rpc::get_transaction(2 + i as u64, signature))?;
         let logs: Vec<String> = tx_result
@@ -139,12 +141,79 @@ fn run(args_json: &str) -> Result<String, String> {
             .map(|arr| arr.iter().filter_map(|v| v.as_str().map(String::from)).collect())
             .unwrap_or_default();
 
-        events.extend(decode_events_from_logs(signature, block_time, &logs));
+        if failed {
+            // IMPORTANT, discovered by live-testing against devnet rather
+            // than assumed: this will almost always be empty. Both
+            // execute_transfer and propose_intent call sendTransaction with
+            // the default skipPreflight=false, so the RPC node *simulates*
+            // first and returns cap/allow-list/approval refusals directly as
+            // an RPC error — the transaction is never actually submitted to
+            // the cluster, so it never becomes a signature getSignaturesFor
+            // Address can see. Verified by triggering PerTxCapExceeded,
+            // ApprovalRequired, and NotAllowlisted refusals live against the
+            // real devnet policy in the same session this was built: none of
+            // them ever showed up here. What DOES land here is the narrower,
+            // real case of a transaction that *passed* simulation but then
+            // failed at actual execution (state changed in between — the
+            // exact TOCTOU race carapace_dry_run's own docs warn about) or a
+            // future caller that submits with skipPreflight=true. Don't
+            // treat an empty list as "no refusals happened today" — treat it
+            // as "no *simulation-surviving* refusals happened today," which
+            // is a real, meaningfully different, honest claim.
+            let reason = translate_from_logs(&logs)
+                .unwrap_or_else(|| "failed for a reason not decoded from its logs".to_string());
+            failures.push(json!({
+                "signature": signature,
+                "block_time": block_time,
+                "reason": reason,
+            }));
+        } else {
+            events.extend(decode_events_from_logs(signature, block_time, &logs));
+        }
+    }
+
+    // Every Intent still Pending right now — separate from `events` above,
+    // since a Pending Intent has no "it happened" event of its own (only
+    // IntentProposed, which doesn't tell you whether it's since been
+    // decided). Filtered client-side after fetching by policy alone, rather
+    // than adding a second memcmp filter on the `status` byte offset,
+    // because getting that offset wrong would silently return zero results
+    // instead of erroring — borsh-deserializing and checking the real enum
+    // is the version that fails loudly if the account layout ever changes.
+    let intent_accounts_result = rpc_call(
+        &scheme,
+        &authority,
+        &path,
+        &rpc::get_program_accounts_with_memcmp(
+            2 + signatures.len() as u64,
+            &args.program_id,
+            &[(0, &account_discriminator("Intent")), (8, policy_address.to_bytes().as_slice())],
+        ),
+    )?;
+    let mut pending_intents = Vec::new();
+    if let Some(accounts) = intent_accounts_result.as_array() {
+        for entry in accounts {
+            let Ok((pubkey, data)) = rpc::decode_program_account_entry(entry) else { continue };
+            let Ok(intent) = Intent::try_from_slice(&data) else { continue };
+            if intent.status != IntentStatus::Pending {
+                continue;
+            }
+            pending_intents.push(json!({
+                "intent_address": pubkey,
+                "nonce": intent.nonce,
+                "asset": intent.asset,
+                "amount": intent.amount,
+                "destination": intent.destination.to_base58(),
+                "expires_at": intent.expires_at,
+            }));
+        }
     }
 
     Ok(json!({
         "policy_address": policy_address.to_base58(),
         "receipts": events,
+        "recent_failures": failures,
+        "pending_intents": pending_intents,
     })
     .to_string())
 }
@@ -165,10 +234,12 @@ impl ToolGuest for Component {
     }
 
     fn description() -> String {
-        "Lists recent on-chain receipts (executed transfers, proposed/approved/denied Intents) \
-         for a Carapace policy, decoded from Solana transaction logs. Use this to show the human \
-         a verifiable audit trail, or to check whether a specific Intent was approved before \
-         trying to execute it."
+        "Lists recent on-chain activity for a Carapace policy: successful receipts (executed \
+         transfers, proposed/approved/denied Intents) decoded from transaction logs, recently \
+         REJECTED attempts with their plain-English reason (recent_failures), and every Intent \
+         still awaiting the owner's decision (pending_intents). Use this to show the human a \
+         verifiable audit trail, check whether a specific Intent was approved before executing \
+         it, or summarize what happened over a period of time."
             .to_string()
     }
 

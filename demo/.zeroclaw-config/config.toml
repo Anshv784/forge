@@ -16,6 +16,7 @@ model_provider = "openai.default"
 risk_profile = "default"
 skill_bundles = ["carapace"]
 channels = ["discord.default"]
+cron_jobs = ["carapace_nightly_receipts"]
 
 [channels.discord.default]
 enabled = true
@@ -26,6 +27,58 @@ stream_mode = "partial"
 channel = "discord.default"
 agents = ["carapace_demo"]
 external_peers = ["1374617356474777711"]
+
+# Nightly receipts summary. Runs at 00:00 UTC. `delivery.to` must be a real
+# Discord CHANNEL id (not the user id above) — right-click the channel in
+# Discord with Developer Mode on -> Copy Channel ID -> paste it below.
+[cron.carapace_nightly_receipts]
+name = "Carapace nightly receipts"
+job_type = "agent"
+enabled = true
+uses_memory = false
+prompt = """
+Post the nightly Carapace summary for owner 3sroGUjeAAtMDFw4GNPH9y9uqnBNvc4QpLBxzpzmhsPB, \
+agent_index 0, at https://api.devnet.solana.com, program GuZ6yoSDkTcYh2PKAeoDdb51ZhP9i7pRhL6MGrZXST8L.
+
+1. Call carapace_policy_status for the current caps and remaining budget.
+2. Call carapace_list_receipts with limit 25 to cover the last day's activity.
+3. Add up the exact lamport amounts from the receipts' TransferExecuted \
+entries yourself, one at a time, then convert the total to SOL once at the \
+end — do not estimate or round partial sums along the way. Getting this \
+sum wrong is the same class of mistake as a payment unit-conversion error: \
+it will not be caught by anything else, so slow down and double check it.
+4. Post exactly one Discord message in this format:
+
+**Carapace daily summary — <today's date>**
+Paid out today: <sum of TransferExecuted amounts from receipts, in SOL, or \
+"Nothing paid out today." if there were none>
+Remaining budget: <remaining_today_lamports from policy_status, in SOL> of <max_daily_lamports, in SOL>
+On-chain refusals: <count recent_failures> — <list each one's reason, or \
+"None recorded." if empty>. If this is empty, do NOT imply nothing was ever \
+refused — most refusals are caught by simulation before they ever reach the \
+chain, so an empty list here is normal, not necessarily a quiet day.
+Awaiting your approval: <list each pending_intents entry as "<amount> SOL to \
+<destination> (proposed <relative time>)", or "Nothing waiting on you." if empty>
+
+On a day with zero receipts, zero failures, and zero pending intents, still \
+post the message above with every line filled in as "Nothing ... today" — a \
+short, clearly-worded quiet report, not silence. This is the expected, normal \
+case most nights.
+
+Never output the literal word NO_REPLY under any circumstance, in any form — \
+it suppresses delivery entirely, and this job's whole point is a message \
+every single night, quiet or not.
+"""
+
+[cron.carapace_nightly_receipts.schedule]
+kind = "cron"
+expr = "0 0 * * *"
+tz = "UTC"
+
+[cron.carapace_nightly_receipts.delivery]
+mode = "announce"
+channel = "discord"
+to = "REPLACE_WITH_YOUR_DISCORD_CHANNEL_ID"
 
 [autonomy]
 allowed_tools = [

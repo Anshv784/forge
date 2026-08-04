@@ -354,6 +354,7 @@ dependencies = [
 name = "carapace_list_receipts"
 version = "0.1.0"
 dependencies = [
+ "borsh",
  "serde",
  "serde_json",
  "solana-core",

@@ -126,6 +126,34 @@ fn carapace_error_message(error_name: &str) -> Option<&'static str> {
     }
 }
 
+/// Translates a transaction's program logs into one plain sentence, if they
+/// contain a recognizable `AnchorError` line. Returns `None` (not a
+/// fallback string) when no such line is found, so callers that have other
+/// context to fall back on (e.g. `list_receipts` just labeling it "failed
+/// for an unrecognized reason") can do so instead of getting a generic
+/// sentence baked in.
+pub fn translate_from_logs(logs: &[String]) -> Option<String> {
+    let parsed_error = parse_anchor_log_error(logs)?;
+
+    if let Some(account) = &parsed_error.account_name {
+        if let Some(msg) = account_specific_message(account, &parsed_error.error_name) {
+            return Some(msg.to_string());
+        }
+    }
+    if let Some(msg) = carapace_error_message(&parsed_error.error_name) {
+        return Some(msg.to_string());
+    }
+
+    Some(format!(
+        "Rejected on-chain ({}{}) — no plain-English explanation mapped for this one yet.",
+        parsed_error.error_name,
+        parsed_error
+            .account_name
+            .map(|a| format!(", account: {a}"))
+            .unwrap_or_default()
+    ))
+}
+
 /// Translates a failed `sendTransaction` RPC error (the `Err` string
 /// produced by `rpc::parse_result`, which is `serde_json::Value::to_string()`
 /// on the RPC's `error` field) into one plain sentence.
@@ -150,27 +178,7 @@ pub fn translate_send_transaction_error(raw_error: &str) -> String {
     };
 
     let logs: Vec<String> = logs.iter().filter_map(|v| v.as_str().map(str::to_string)).collect();
-    let Some(parsed_error) = parse_anchor_log_error(&logs) else {
-        return truncate_fallback(raw_error);
-    };
-
-    if let Some(account) = &parsed_error.account_name {
-        if let Some(msg) = account_specific_message(account, &parsed_error.error_name) {
-            return msg.to_string();
-        }
-    }
-    if let Some(msg) = carapace_error_message(&parsed_error.error_name) {
-        return msg.to_string();
-    }
-
-    format!(
-        "The transfer was rejected on-chain ({}{}) — this is an error this dashboard doesn't have a plain-English explanation for yet.",
-        parsed_error.error_name,
-        parsed_error
-            .account_name
-            .map(|a| format!(", account: {a}"))
-            .unwrap_or_default()
-    )
+    translate_from_logs(&logs).unwrap_or_else(|| truncate_fallback(raw_error))
 }
 
 fn truncate_fallback(raw_error: &str) -> String {
