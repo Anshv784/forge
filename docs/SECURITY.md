@@ -81,9 +81,11 @@ All arithmetic uses `checked_add`/`checked_sub` with typed errors
   resets to 0 on the first transaction at/after `window_start_ts + 86400s`.
   This means spending the full daily cap right before a reset and again
   right after is possible (~2x the daily cap within a short span around the
-  boundary). A true sliding window needs a timestamped ledger and a
-  trailing-sum query, which isn't worth the account/compute budget for this
-  project. Documented here rather than oversold as "rolling."
+  boundary). Documented here rather than oversold as "rolling." Full
+  analysis — exact mechanics, real on-chain cost figures for fixing it (not
+  textbook estimates), two mitigations that ship without an Anchor
+  redeploy, the real sliding-window design, and a recommendation — in
+  [`DAILY_CAP_EXPLOIT.md`](DAILY_CAP_EXPLOIT.md).
 - **`Intent.action_hash` is a hash, not the full description.** The
   human-readable text (what an approver actually reads before approving)
   lives off-chain / in the dashboard and Blink UI; only its hash is on
@@ -122,6 +124,26 @@ mechanism (`crates/zeroclaw-plugins/src/signature.rs`,
 `crates/zeroclaw-plugins/src/host.rs`). The example install config recommends
 `signature_mode = "strict"` — plugins from an untrusted publisher key will
 not load at all, not just warn.
+
+## Plugin-side safety features (don't confuse these with on-chain enforcement)
+
+Two things live in the plugin layer, not the program, and are explicitly
+*not* security boundaries — they exist for correctness and usability, and
+the on-chain checks above are what actually stop a bad transfer regardless
+of whether either of these works correctly:
+
+- **`carapace_dry_run`** re-implements the on-chain check order client-side
+  to answer "would this succeed right now?" with no transaction. It is a
+  second implementation, not a call into the program, so it can disagree
+  with reality (time-of-check/time-of-use against concurrent transfers,
+  mainly) — see the doc comment on `solana_core::dry_run::evaluate`.
+- **Plain-language error translation** (`solana_core::error_translate`)
+  turns a failed transaction's Anchor logs into a fixed, pre-approved
+  sentence instead of raw JSON, and the Skill requires relaying it
+  verbatim. This is a UX/trust-in-the-agent improvement — the actual
+  refusal already happened on-chain before this code ever runs; a bug in
+  the translation table could produce a confusing message, never an
+  incorrect transfer.
 
 ## Reproducing the test coverage
 
