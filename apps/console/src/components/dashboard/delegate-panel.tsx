@@ -52,7 +52,7 @@ export function DelegatePanel({
       <CardHeader>
         <div>
           <CardTitle>Delegate key</CardTitle>
-          <CardDescription>The agent's session key — the only key it ever holds.</CardDescription>
+          <CardDescription>The agent&apos;s session key — the only key it ever holds.</CardDescription>
         </div>
         <KeyRound className="h-4 w-4 shrink-0 text-foreground-subtle" />
       </CardHeader>

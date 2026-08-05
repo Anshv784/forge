@@ -19,7 +19,7 @@ export function ConnectPrompt() {
         </h1>
         <p className="text-[15px] leading-relaxed text-foreground-subtle">
           Carapace shows the live on-chain policy for whichever wallet you connect — spending caps,
-          pending approvals, and a full audit trail your agent's host can't fake.
+          pending approvals, and a full audit trail your agent&apos;s host can&apos;t fake.
         </p>
       </div>
       <div className="grid w-full max-w-lg gap-3 sm:grid-cols-3">

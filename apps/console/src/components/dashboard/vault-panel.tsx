@@ -51,7 +51,7 @@ export function VaultPanel({
       <CardHeader>
         <div>
           <CardTitle>Vault</CardTitle>
-          <CardDescription>Funds live here, program-owned — never in the agent's own key.</CardDescription>
+          <CardDescription>Funds live here, program-owned — never in the agent&apos;s own key.</CardDescription>
         </div>
         <Wallet className="h-4 w-4 shrink-0 text-foreground-subtle" />
       </CardHeader>

@@ -19,7 +19,7 @@ export function ActivityFeed({
       <CardHeader>
         <div>
           <CardTitle>Activity</CardTitle>
-          <CardDescription>Verifiable on-chain — not this dashboard's word for it.</CardDescription>
+          <CardDescription>Verifiable on-chain — not this dashboard&apos;s word for it.</CardDescription>
         </div>
       </CardHeader>
       <CardContent>
