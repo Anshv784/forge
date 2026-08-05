@@ -17,7 +17,13 @@ export function EmptyState({
   return (
     <div className={cn("flex flex-col items-center justify-center gap-3.5 px-6 py-12 text-center", className)}>
       {icon && (
-        <div className="flex h-12 w-12 items-center justify-center rounded-full border border-border bg-surface-raised text-foreground-subtle shadow-elevation-xs">
+        <div
+          className="flex h-12 w-12 items-center justify-center rounded-full border border-border text-foreground-subtle shadow-elevation-xs"
+          style={{
+            background:
+              "radial-gradient(circle at 30% 30%, color-mix(in srgb, var(--accent) 10%, var(--surface-raised)), var(--surface-raised))",
+          }}
+        >
           {icon}
         </div>
       )}

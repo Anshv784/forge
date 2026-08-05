@@ -1,12 +1,21 @@
 "use client";
 
-import { AnimatePresence } from "framer-motion";
+import { AnimatePresence, motion, type Variants } from "framer-motion";
 import { Inbox } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { EmptyState } from "@/components/ui/empty-state";
 import { Skeleton } from "@/components/ui/skeleton";
 import { IntentCard } from "./intent-card";
 import type { IntentAccountData } from "@/hooks/use-intents";
+
+const fadeUp: Variants = {
+  hidden: { opacity: 0, y: 12 },
+  show: (delay: number = 0) => ({
+    opacity: 1,
+    y: 0,
+    transition: { duration: 0.35, delay, ease: [0.22, 1, 0.36, 1] as const },
+  }),
+};
 
 export function PendingIntents({
   intents,
@@ -49,16 +58,25 @@ export function PendingIntents({
           />
         ) : (
           <AnimatePresence initial={false}>
-            {actionable.map((intent) => (
-              <IntentCard
+            {actionable.map((intent, index) => (
+              <motion.div
                 key={intent.address.toBase58()}
-                intent={intent}
-                isOwner={isOwner}
-                explorerCluster={explorerCluster}
-                pendingAction={pendingAction}
-                onApprove={() => onApprove(intent)}
-                onDeny={() => onDeny(intent)}
-              />
+                layout
+                variants={fadeUp}
+                initial="hidden"
+                animate="show"
+                exit={{ opacity: 0, y: -6 }}
+                custom={index * 0.05}
+              >
+                <IntentCard
+                  intent={intent}
+                  isOwner={isOwner}
+                  explorerCluster={explorerCluster}
+                  pendingAction={pendingAction}
+                  onApprove={() => onApprove(intent)}
+                  onDeny={() => onDeny(intent)}
+                />
+              </motion.div>
             ))}
           </AnimatePresence>
         )}

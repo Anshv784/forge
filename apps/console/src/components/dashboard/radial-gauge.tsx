@@ -1,5 +1,7 @@
 "use client";
 
+import { motion } from "framer-motion";
+import { useId } from "react";
 import { cn } from "@/lib/utils";
 
 /** Hand-built SVG radial gauge — no charting library needed for a single
@@ -17,19 +19,26 @@ export function RadialGauge({
   tone?: "accent" | "danger" | "warning";
   className?: string;
 }) {
+  const gradientId = useId();
   const clamped = Math.max(0, Math.min(1, fraction));
   const radius = (size - strokeWidth) / 2;
   const circumference = 2 * Math.PI * radius;
   const offset = circumference * (1 - clamped);
 
-  const toneVar = {
-    accent: "var(--accent)",
+  const toneStroke = {
+    accent: `url(#${gradientId})`,
     danger: "var(--danger)",
     warning: "var(--warning)",
   }[tone];
 
   return (
     <svg width={size} height={size} viewBox={`0 0 ${size} ${size}`} className={cn("-rotate-90", className)}>
+      <defs>
+        <linearGradient id={gradientId} x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" stopColor="var(--solana-purple)" />
+          <stop offset="100%" stopColor="var(--solana-green)" />
+        </linearGradient>
+      </defs>
       <circle
         cx={size / 2}
         cy={size / 2}
@@ -38,17 +47,19 @@ export function RadialGauge({
         stroke="var(--border)"
         strokeWidth={strokeWidth}
       />
-      <circle
+      <motion.circle
         cx={size / 2}
         cy={size / 2}
         r={radius}
         fill="none"
-        stroke={toneVar}
+        stroke={toneStroke}
         strokeWidth={strokeWidth}
         strokeDasharray={circumference}
-        strokeDashoffset={offset}
         strokeLinecap="round"
-        style={{ transition: "stroke-dashoffset 0.7s cubic-bezier(0.22, 1, 0.36, 1), stroke 0.3s ease" }}
+        initial={{ strokeDashoffset: circumference }}
+        animate={{ strokeDashoffset: offset }}
+        transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
+        style={{ transition: "stroke 0.3s ease" }}
       />
     </svg>
   );

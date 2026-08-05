@@ -27,7 +27,7 @@ function describe(event: ReceiptEvent, explorerCluster: string): { icon: React.R
       };
     case "intentProposed":
       return {
-        icon: <CircleDot className="h-3.5 w-3.5 text-warning" />,
+        icon: <CircleDot className="h-3.5 w-3.5 text-accent-violet" />,
         text: (
           <>
             Proposed <span className="font-medium tabular-nums text-foreground">{assetAmount(d.asset, d.amount)}</span> to{" "}
@@ -37,7 +37,7 @@ function describe(event: ReceiptEvent, explorerCluster: string): { icon: React.R
       };
     case "intentApproved":
       return {
-        icon: <CheckCircle2 className="h-3.5 w-3.5 text-info" />,
+        icon: <CheckCircle2 className="h-3.5 w-3.5 text-success" />,
         text: <>Approved intent #{d.nonce?.toString()}</>,
       };
     case "intentDenied":
@@ -60,7 +60,7 @@ function describe(event: ReceiptEvent, explorerCluster: string): { icon: React.R
 export function ActivityItem({ event, explorerCluster }: { event: ReceiptEvent; explorerCluster: string }) {
   const { icon, text } = describe(event, explorerCluster);
   return (
-    <div className="flex items-start gap-3 py-3 transition-colors duration-150 first:pt-0 last:pb-0">
+    <div className="flex items-start gap-3">
       <div className="mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-surface-raised">
         {icon}
       </div>

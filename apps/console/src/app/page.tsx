@@ -161,165 +161,206 @@ export default function Home() {
     <>
       <Header />
       <main className="mx-auto w-full max-w-6xl flex-1 px-6 py-10">
-        {!publicKey ? (
-          <ConnectPrompt />
-        ) : (
-          <div className="space-y-7">
-            <OwnerSelector
-              ownerInput={ownerInput}
-              onOwnerInputChange={setOwnerInput}
-              agentIndex={agentIndex}
-              onAgentIndexChange={setAgentIndex}
-              onResetToWallet={() => setOwnerInput(publicKey.toBase58())}
-              canReset={ownerInput !== publicKey.toBase58()}
-            />
+        <AnimatePresence mode="wait">
+          {!publicKey ? (
+            <motion.div
+              key="connect-prompt"
+              initial={{ opacity: 0, y: 8 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -8 }}
+              transition={{ duration: 0.2, ease: [0.22, 1, 0.36, 1] }}
+            >
+              <ConnectPrompt />
+            </motion.div>
+          ) : (
+            <motion.div
+              key="dashboard-shell"
+              initial={{ opacity: 0, y: 8 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -8 }}
+              transition={{ duration: 0.2, ease: [0.22, 1, 0.36, 1] }}
+              className="space-y-7"
+            >
+              <OwnerSelector
+                ownerInput={ownerInput}
+                onOwnerInputChange={setOwnerInput}
+                agentIndex={agentIndex}
+                onAgentIndexChange={setAgentIndex}
+                onResetToWallet={() => setOwnerInput(publicKey.toBase58())}
+                canReset={ownerInput !== publicKey.toBase58()}
+              />
 
-            <AnimatePresence>
-              {actionError && (
-                <motion.div
-                  initial={{ opacity: 0, y: -6, height: 0 }}
-                  animate={{ opacity: 1, y: 0, height: "auto" }}
-                  exit={{ opacity: 0, height: 0 }}
-                  transition={{ duration: 0.2 }}
-                  className="flex items-start gap-2.5 overflow-hidden rounded-xl border border-danger/30 bg-danger-tint px-4 py-3 text-[13px] leading-relaxed text-danger"
-                >
-                  <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0" />
-                  <span className="wrap-break-word">{actionError}</span>
-                </motion.div>
-              )}
-            </AnimatePresence>
+              <AnimatePresence>
+                {actionError && (
+                  <motion.div
+                    initial={{ opacity: 0, y: -6, height: 0 }}
+                    animate={{ opacity: 1, y: 0, height: "auto" }}
+                    exit={{ opacity: 0, height: 0 }}
+                    transition={{ duration: 0.2 }}
+                    className="flex items-start gap-2.5 overflow-hidden rounded-xl border border-danger/30 bg-danger-tint px-4 py-3 text-[13px] leading-relaxed text-danger"
+                  >
+                    <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0" />
+                    <span className="wrap-break-word">{actionError}</span>
+                  </motion.div>
+                )}
+              </AnimatePresence>
 
-            {loading && !policy ? (
-              <div className="space-y-6">
-                <Skeleton className="h-40 w-full rounded-2xl" />
-                <div className="grid gap-4 sm:grid-cols-2">
-                  <Skeleton className="h-28 rounded-2xl" />
-                  <Skeleton className="h-28 rounded-2xl" />
-                </div>
-              </div>
-            ) : notFound || !policy || !policyAddress ? (
-              isViewingOwnPolicy && ownerPubkey ? (
-                <InitPolicyForm
-                  owner={ownerPubkey}
-                  agentIndex={agentIndex}
-                  pending={pendingAction === "initialize-policy"}
-                  onSubmit={handleInitPolicy}
-                />
-              ) : (
-                <EmptyState
-                  icon={<ShieldOff className="h-5 w-5" />}
-                  title="No policy found for this owner + agent index"
-                  description={`Nothing is initialized yet on ${cluster.label}.`}
-                  className="rounded-2xl border border-border bg-surface py-20 shadow-elevation-xs"
-                />
-              )
-            ) : (
-              <>
-                <motion.div variants={fadeUp} initial="hidden" animate="show" custom={0}>
-                  <PolicyHero
-                    policy={policy}
-                    policyAddress={policyAddress}
-                    solVaultBalance={solVaultBalance}
-                    isOwner={isOwner}
-                    explorerCluster={cluster.explorerCluster}
-                    onTogglePause={handleTogglePause}
-                    pausePending={pendingAction === "pause"}
-                  />
-                </motion.div>
+              <AnimatePresence mode="wait">
+                {loading && !policy ? (
+                  <motion.div
+                    key="loading"
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    exit={{ opacity: 0 }}
+                    transition={{ duration: 0.2, ease: [0.22, 1, 0.36, 1] }}
+                    className="space-y-6"
+                  >
+                    <Skeleton className="h-40 w-full rounded-2xl" />
+                    <div className="grid gap-4 sm:grid-cols-2">
+                      <Skeleton className="h-28 rounded-2xl" />
+                      <Skeleton className="h-28 rounded-2xl" />
+                    </div>
+                  </motion.div>
+                ) : notFound || !policy || !policyAddress ? (
+                  <motion.div
+                    key="empty-or-init"
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    exit={{ opacity: 0 }}
+                    transition={{ duration: 0.2, ease: [0.22, 1, 0.36, 1] }}
+                  >
+                    {isViewingOwnPolicy && ownerPubkey ? (
+                      <InitPolicyForm
+                        owner={ownerPubkey}
+                        agentIndex={agentIndex}
+                        pending={pendingAction === "initialize-policy"}
+                        onSubmit={handleInitPolicy}
+                      />
+                    ) : (
+                      <EmptyState
+                        icon={<ShieldOff className="h-5 w-5" />}
+                        title="No policy found for this owner + agent index"
+                        description={`Nothing is initialized yet on ${cluster.label}.`}
+                        className="rounded-2xl border border-border bg-surface py-20 shadow-elevation-xs"
+                      />
+                    )}
+                  </motion.div>
+                ) : (
+                  <motion.div
+                    key="loaded"
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    exit={{ opacity: 0 }}
+                    transition={{ duration: 0.2, ease: [0.22, 1, 0.36, 1] }}
+                    className="space-y-7"
+                  >
+                    <motion.div variants={fadeUp} initial="hidden" animate="show" custom={0}>
+                      <PolicyHero
+                        policy={policy}
+                        policyAddress={policyAddress}
+                        solVaultBalance={solVaultBalance}
+                        isOwner={isOwner}
+                        explorerCluster={cluster.explorerCluster}
+                        onTogglePause={handleTogglePause}
+                        pausePending={pendingAction === "pause"}
+                      />
+                    </motion.div>
 
-                <motion.div
-                  variants={fadeUp}
-                  initial="hidden"
-                  animate="show"
-                  custom={0.05}
-                  className="grid gap-4 sm:grid-cols-2"
-                >
-                  <AllowanceCard
-                    label="SOL allowance"
-                    spent={policy.spentTodayLamports}
-                    max={policy.maxDailyLamports}
-                    formatValue={(v) => formatLamports(v)}
-                  />
-                  <AllowanceCard
-                    label="SPL allowance"
-                    spent={policy.spentTodaySpl}
-                    max={policy.maxDailySpl}
-                    formatValue={(v) => formatTokenAmount(v, 6, "tok")}
-                  />
-                </motion.div>
+                    <motion.div
+                      variants={fadeUp}
+                      initial="hidden"
+                      animate="show"
+                      custom={0.05}
+                      className="grid gap-4 sm:grid-cols-2"
+                    >
+                      <AllowanceCard
+                        label="SOL allowance"
+                        spent={policy.spentTodayLamports}
+                        max={policy.maxDailyLamports}
+                        formatValue={(v) => formatLamports(v)}
+                      />
+                      <AllowanceCard
+                        label="SPL allowance"
+                        spent={policy.spentTodaySpl}
+                        max={policy.maxDailySpl}
+                        formatValue={(v) => formatTokenAmount(v, 6, "tok")}
+                      />
+                    </motion.div>
 
-                <motion.div variants={fadeUp} initial="hidden" animate="show" custom={0.1}>
-                  <SpendChart receipts={receipts} />
-                </motion.div>
+                    <motion.div variants={fadeUp} initial="hidden" animate="show" custom={0.1}>
+                      <SpendChart receipts={receipts} />
+                    </motion.div>
 
-                <motion.div
-                  variants={fadeUp}
-                  initial="hidden"
-                  animate="show"
-                  custom={0.15}
-                  className="grid gap-6 lg:grid-cols-2"
-                >
-                  <PendingIntents
-                    intents={intents}
-                    loading={loading}
-                    isOwner={isOwner}
-                    explorerCluster={cluster.explorerCluster}
-                    pendingAction={pendingAction}
-                    onApprove={(intent) => handleApprove(intent.address)}
-                    onDeny={(intent) => handleDeny(intent.address)}
-                  />
-                  <ActivityFeed receipts={receipts} loading={receiptsLoading} explorerCluster={cluster.explorerCluster} />
-                </motion.div>
+                    <motion.div
+                      variants={fadeUp}
+                      initial="hidden"
+                      animate="show"
+                      custom={0.15}
+                      className="grid gap-6 lg:grid-cols-2"
+                    >
+                      <PendingIntents
+                        intents={intents}
+                        loading={loading}
+                        isOwner={isOwner}
+                        explorerCluster={cluster.explorerCluster}
+                        pendingAction={pendingAction}
+                        onApprove={(intent) => handleApprove(intent.address)}
+                        onDeny={(intent) => handleDeny(intent.address)}
+                      />
+                      <ActivityFeed receipts={receipts} loading={receiptsLoading} explorerCluster={cluster.explorerCluster} />
+                    </motion.div>
 
-                <motion.div initial="hidden" animate="show" custom={0.2} variants={fadeUp} className="space-y-4 pt-2">
-                  <div className="flex items-center gap-3">
-                    <h2 className="font-display text-[15px] font-medium tracking-[-0.011em] text-foreground">
-                      Manage
-                    </h2>
-                    <div className="h-px flex-1 bg-border" />
-                  </div>
+                    <motion.div initial="hidden" animate="show" custom={0.2} variants={fadeUp} className="space-y-4 pt-2">
+                      <div className="flex items-center gap-3">
+                        <h2 className="font-display text-[15px] font-medium tracking-[-0.011em] text-foreground">
+                          Manage
+                        </h2>
+                        <div className="h-px flex-1 bg-border" />
+                      </div>
 
-                  <div className="grid gap-4 lg:grid-cols-2">
-                    <AllowlistPanel
-                      entries={allowlistEntries}
-                      loading={allowlistLoading}
-                      isOwner={isOwner}
-                      explorerCluster={cluster.explorerCluster}
-                      pendingAction={pendingAction}
-                      onAdd={handleAddAllowlist}
-                      onRemove={handleRemoveAllowlist}
-                    />
-                    <VaultPanel
-                      isOwner={isOwner}
-                      connectedWallet={publicKey}
-                      splMint={policy.splMint}
-                      pendingAction={pendingAction}
-                      onDepositSol={handleDepositSol}
-                      onDepositSpl={handleDepositSpl}
-                      onWithdrawSol={handleWithdrawSol}
-                      onWithdrawSpl={handleWithdrawSpl}
-                    />
-                  </div>
+                      <div className="grid gap-4 lg:grid-cols-2">
+                        <AllowlistPanel
+                          entries={allowlistEntries}
+                          loading={allowlistLoading}
+                          isOwner={isOwner}
+                          explorerCluster={cluster.explorerCluster}
+                          pendingAction={pendingAction}
+                          onAdd={handleAddAllowlist}
+                          onRemove={handleRemoveAllowlist}
+                        />
+                        <VaultPanel
+                          isOwner={isOwner}
+                          connectedWallet={publicKey}
+                          splMint={policy.splMint}
+                          pendingAction={pendingAction}
+                          onDepositSol={handleDepositSol}
+                          onDepositSpl={handleDepositSpl}
+                          onWithdrawSol={handleWithdrawSol}
+                          onWithdrawSpl={handleWithdrawSpl}
+                        />
+                      </div>
 
-                  <LimitsPanel
-                    policy={policy}
-                    isOwner={isOwner}
-                    pending={pendingAction === "update-limits"}
-                    onSave={handleSaveLimits}
-                  />
+                      <LimitsPanel
+                        policy={policy}
+                        isOwner={isOwner}
+                        pending={pendingAction === "update-limits"}
+                        onSave={handleSaveLimits}
+                      />
 
-                  <DelegatePanel
-                    currentDelegate={policy.delegate}
-                    isOwner={isOwner}
-                    explorerCluster={cluster.explorerCluster}
-                    pending={pendingAction === "rotate-delegate"}
-                    onRotate={handleRotateDelegate}
-                  />
-                </motion.div>
-              </>
-            )}
-          </div>
-        )}
+                      <DelegatePanel
+                        currentDelegate={policy.delegate}
+                        isOwner={isOwner}
+                        explorerCluster={cluster.explorerCluster}
+                        pending={pendingAction === "rotate-delegate"}
+                        onRotate={handleRotateDelegate}
+                      />
+                    </motion.div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </motion.div>
+          )}
+        </AnimatePresence>
       </main>
       <footer className="border-t border-border">
         <div className="mx-auto w-full max-w-6xl px-6 py-7 text-center text-[12px] text-foreground-subtle">

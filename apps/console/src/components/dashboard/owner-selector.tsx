@@ -19,7 +19,7 @@ export function OwnerSelector({
   canReset: boolean;
 }) {
   return (
-    <div className="flex flex-col gap-3 rounded-xl border border-border bg-surface-raised/60 p-3 sm:flex-row sm:items-center">
+    <div className="flex flex-col gap-3 rounded-xl border border-border bg-surface-raised/60 p-3 transition-colors duration-200 hover:border-border-strong sm:flex-row sm:items-center">
       <div className="flex flex-1 items-center gap-2.5">
         <label className="whitespace-nowrap text-[11.5px] font-medium uppercase tracking-wide text-foreground-subtle">
           Viewing owner
@@ -29,7 +29,7 @@ export function OwnerSelector({
           onChange={(e) => onOwnerInputChange(e.target.value)}
           placeholder="Owner wallet address"
           spellCheck={false}
-          className="w-full min-w-0 rounded-lg border border-border bg-transparent px-3 py-1.5 font-mono text-[13px] text-foreground outline-none transition-[border-color,box-shadow] duration-150 focus-visible:border-accent focus-visible:ring-3 focus-visible:ring-accent/15"
+          className="w-full min-w-0 rounded-lg border border-border bg-transparent px-3 py-1.5 font-mono text-[13px] text-foreground outline-none transition-[border-color,box-shadow] duration-150 hover:border-border-strong focus-visible:border-accent focus-visible:ring-3 focus-visible:ring-accent/15"
         />
         {canReset && (
           <button
@@ -43,7 +43,7 @@ export function OwnerSelector({
       </div>
       <div className="flex items-center gap-2">
         <span className="text-[11.5px] font-medium uppercase tracking-wide text-foreground-subtle">Agent</span>
-        <div className="flex items-center rounded-lg border border-border">
+        <div className="flex items-center rounded-lg border border-border transition-colors duration-200 hover:border-border-strong">
           <Button
             variant="ghost"
             size="sm"

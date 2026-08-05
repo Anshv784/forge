@@ -1,5 +1,6 @@
 "use client";
 
+import { motion } from "framer-motion";
 import { Area, AreaChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { EmptyState } from "@/components/ui/empty-state";
@@ -47,7 +48,12 @@ export function SpendChart({ receipts }: { receipts: ReceiptEvent[] }) {
             className="py-8"
           />
         ) : (
-          <div className="h-56 w-full">
+          <motion.div
+            className="h-56 w-full origin-bottom"
+            initial={{ opacity: 0, scaleY: 0.92 }}
+            animate={{ opacity: 1, scaleY: 1 }}
+            transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
+          >
             <ResponsiveContainer width="100%" height="100%">
               <AreaChart data={series} margin={{ top: 8, right: 8, left: 0, bottom: 0 }}>
                 <defs>
@@ -88,7 +94,7 @@ export function SpendChart({ receipts }: { receipts: ReceiptEvent[] }) {
                 />
               </AreaChart>
             </ResponsiveContainer>
-          </div>
+          </motion.div>
         )}
       </CardContent>
     </Card>

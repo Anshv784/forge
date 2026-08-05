@@ -7,15 +7,15 @@ import { Address } from "@/components/ui/address";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import type { IntentAccountData } from "@/hooks/use-intents";
-import { formatLamports, formatTokenAmount, formatRelativeTime } from "@/lib/utils";
+import { cn, formatLamports, formatTokenAmount, formatRelativeTime } from "@/lib/utils";
 import { solscanAddressUrl } from "@/lib/config";
 import { useCluster } from "@/components/providers/cluster-provider";
 
 const statusTone = {
-  pending: "warning",
-  approved: "info",
+  pending: "violet",
+  approved: "success",
   denied: "danger",
-  expired: "neutral",
+  expired: "danger",
   executed: "success",
 } as const;
 
@@ -42,6 +42,7 @@ export function IntentCard({
   const denying = pendingAction === `deny-${key}`;
   const { cluster } = useCluster();
   const [linkCopied, setLinkCopied] = useState(false);
+  const awaitingSignature = isOwner && intent.status === "pending" && !isExpired;
 
   async function copyBlinkLink() {
     const actionUrl = `${window.location.origin}/api/actions/intent/${key}?cluster=${cluster.id}`;
@@ -58,12 +59,15 @@ export function IntentCard({
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: -6 }}
       transition={{ duration: 0.2 }}
-      className="rounded-xl border border-border bg-surface p-4 shadow-elevation-xs transition-[border-color,box-shadow] duration-200 hover:border-border-strong"
+      className={cn(
+        "rounded-xl border border-border bg-surface p-4 shadow-elevation-xs transition-[border-color,box-shadow] duration-200 hover:border-border-strong",
+        awaitingSignature && "border-glow-animated"
+      )}
     >
       <div className="flex items-start justify-between gap-3">
         <div className="min-w-0 space-y-1.5">
           <div className="flex flex-wrap items-center gap-2">
-            <Badge tone={isExpired ? "neutral" : statusTone[intent.status]} dot>
+            <Badge tone={isExpired ? "danger" : statusTone[intent.status]} dot>
               {isExpired ? "expired" : intent.status}
             </Badge>
             <span className="font-mono text-[11px] tabular-nums text-foreground-subtle">nonce {intent.nonce.toString()}</span>

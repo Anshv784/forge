@@ -3,107 +3,158 @@
 /* ---------------------------------------------------------------------
    Carapace design tokens.
 
-   Warm, low-saturation palette (clay/copper accent on near-black or cream
-   neutrals) — deliberately not a default blue/violet SaaS gradient look.
-   Dark mode is primary (this is an operator console meant to sit open
-   during a normal dev workflow), but light mode gets equal care rather
-   than a naive inverted filter.
+   Solana-native brand identity: the primary accent is Solana's own
+   purple (#9945FF), with Solana's green (#14F195) and a bridging sky
+   blue completing the brand trio — the same "purple -> blue -> green"
+   gradient family used across the Solana ecosystem (Phantom, Jupiter,
+   Backpack), over a cool near-black/near-white neutral base. Dark mode
+   is primary (this is an operator console meant to sit open during a
+   normal dev workflow) and remains the default theme; light mode gets
+   equal contrast care rather than a naive inverted filter.
 
-   Refined for a tighter, more considered scale: a real elevation system
-   (four shadow tiers instead of one-off box-shadow values scattered
-   across components), a formal radius scale, and slightly higher-contrast
-   neutrals so borders and text hierarchy read crisply at a glance — the
-   kind of polish gap between "uses a dark theme" and "the dark theme was
-   tuned." Every existing --color-* / --font-* token name is unchanged, so
-   nothing consuming these classes needed to know this happened.
+   Semantic tones (success/warning/danger/info) stay separate from the
+   brand gradient on purpose: brand color signals "this is Carapace,
+   this is Solana," semantic color signals "this is the state of your
+   data." Mixing the two would make status badges lie about meaning.
+
+   Every existing --color-* / --font-* token NAME from prior passes is
+   unchanged, only values shifted — so no consuming component needed a
+   class-name change.
    --------------------------------------------------------------------- */
 
 :root {
-  --background: #faf7f1;
+  --background: #fafafc;
   --surface: #ffffff;
   --surface-raised: #ffffff;
-  --border: #e8e1d2;
-  --border-strong: #d6cbb2;
+  --border: #e6e6ec;
+  --border-strong: #d2d2dc;
 
-  --foreground: #1c1710;
-  --foreground-muted: #66594a;
-  --foreground-subtle: #9c8e78;
+  --foreground: #14141a;
+  --foreground-muted: #55555f;
+  --foreground-subtle: #8a8a96;
 
-  --accent: #b5561f;
-  --accent-hover: #9a4917;
-  --accent-foreground: #fff8f0;
-  --accent-tint: #f4e1cd;
+  --accent: #7c2fe0;
+  --accent-hover: #6b21c9;
+  --accent-foreground: #ffffff;
+  --accent-tint: #f6ecff;
 
-  --success: #3f7530;
-  --success-tint: #e2ecda;
-  --warning: #97690a;
-  --warning-tint: #f2e5c8;
-  --danger: #a02f1f;
-  --danger-tint: #f1dbd6;
-  --info: #2f6f6b;
-  --info-tint: #dbeae8;
+  --accent-blue: #0284c7;
+  --accent-blue-tint: #e6f7ff;
 
-  --shadow-color: 28 20 8;
+  --accent-violet: #7c3aed;
+  --accent-violet-tint: #f3eefe;
+  --accent-pink: #db2777;
+  --accent-pink-tint: #fdeef6;
+
+  --success: #059669;
+  --success-tint: #ecfdf5;
+  --warning: #d97706;
+  --warning-tint: #fffbeb;
+  --danger: #dc2626;
+  --danger-tint: #fef2f2;
+  --info: #0891b2;
+  --info-tint: #ecfeff;
+
+  --shadow-color: 20 20 35;
   --ring-offset-color: var(--background);
+  --orb-opacity: 0.16;
+
+  /* Fixed Solana brand colors — same value in both themes, used only
+     for gradients/glows/fills, never as adaptive text (their raw
+     lightness doesn't hold contrast in light mode as body text). */
+  --solana-purple: #9945ff;
+  --solana-green: #14f195;
+
+  /* Aliases so the spectrum has decorative names distinct from semantic
+     ones (text-accent-cyan reads as "spectrum accent", text-info reads
+     as "this is informational") even though they share one definition. */
+  --accent-cyan: var(--info);
+  --accent-emerald: var(--success);
+  --accent-amber: var(--warning);
+
+  --gradient-brand: linear-gradient(
+    135deg,
+    var(--solana-purple),
+    var(--accent-blue),
+    var(--solana-green)
+  );
 }
 
 [data-theme="dark"] {
-  --background: #100d08;
-  --surface: #1a150e;
-  --surface-raised: #221b12;
-  --border: #2e2517;
-  --border-strong: #453722;
+  --background: #0a0a0f;
+  --surface: #131318;
+  --surface-raised: #17171f;
+  --border: #24242e;
+  --border-strong: #34343f;
 
-  --foreground: #f7f1e4;
-  --foreground-muted: #bcab92;
-  --foreground-subtle: #7d7160;
+  --foreground: #f2f2f5;
+  --foreground-muted: #a8a8b8;
+  --foreground-subtle: #6c6c7c;
 
-  --accent: #e08a45;
-  --accent-hover: #ea9c5c;
-  --accent-foreground: #170e04;
-  --accent-tint: #3a2614;
+  --accent: #9945ff;
+  --accent-hover: #b366ff;
+  --accent-foreground: #ffffff;
+  --accent-tint: #241033;
 
-  --success: #8fbb76;
-  --success-tint: #212c19;
-  --warning: #e3b657;
-  --warning-tint: #332711;
-  --danger: #e08670;
-  --danger-tint: #341d16;
-  --info: #7fbab5;
-  --info-tint: #172a28;
+  --accent-blue: #14b8ff;
+  --accent-blue-tint: #0a2233;
+
+  --accent-violet: #a78bfa;
+  --accent-violet-tint: #271f47;
+  --accent-pink: #f472b6;
+  --accent-pink-tint: #34182a;
+
+  --success: #14f195;
+  --success-tint: #132a1f;
+  --warning: #fbbf24;
+  --warning-tint: #2f2510;
+  --danger: #f87171;
+  --danger-tint: #301616;
+  --info: #22d3ee;
+  --info-tint: #0e2830;
 
   --shadow-color: 0 0 0;
   --ring-offset-color: var(--background);
+  --orb-opacity: 0.32;
 }
 
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) {
-    --background: #100d08;
-    --surface: #1a150e;
-    --surface-raised: #221b12;
-    --border: #2e2517;
-    --border-strong: #453722;
+    --background: #0a0a0f;
+    --surface: #131318;
+    --surface-raised: #17171f;
+    --border: #24242e;
+    --border-strong: #34343f;
 
-    --foreground: #f7f1e4;
-    --foreground-muted: #bcab92;
-    --foreground-subtle: #7d7160;
+    --foreground: #f2f2f5;
+    --foreground-muted: #a8a8b8;
+    --foreground-subtle: #6c6c7c;
 
-    --accent: #e08a45;
-    --accent-hover: #ea9c5c;
-    --accent-foreground: #170e04;
-    --accent-tint: #3a2614;
+    --accent: #9945ff;
+    --accent-hover: #b366ff;
+    --accent-foreground: #ffffff;
+    --accent-tint: #241033;
 
-    --success: #8fbb76;
-    --success-tint: #212c19;
-    --warning: #e3b657;
-    --warning-tint: #332711;
-    --danger: #e08670;
-    --danger-tint: #341d16;
-    --info: #7fbab5;
-    --info-tint: #172a28;
+    --accent-blue: #14b8ff;
+    --accent-blue-tint: #0a2233;
+
+    --accent-violet: #a78bfa;
+    --accent-violet-tint: #271f47;
+    --accent-pink: #f472b6;
+    --accent-pink-tint: #34182a;
+
+    --success: #14f195;
+    --success-tint: #132a1f;
+    --warning: #fbbf24;
+    --warning-tint: #2f2510;
+    --danger: #f87171;
+    --danger-tint: #301616;
+    --info: #22d3ee;
+    --info-tint: #0e2830;
 
     --shadow-color: 0 0 0;
     --ring-offset-color: var(--background);
+    --orb-opacity: 0.32;
   }
 }
 
@@ -122,6 +173,19 @@
   --color-accent-hover: var(--accent-hover);
   --color-accent-foreground: var(--accent-foreground);
   --color-accent-tint: var(--accent-tint);
+
+  --color-accent-blue: var(--accent-blue);
+  --color-accent-blue-tint: var(--accent-blue-tint);
+  --color-solana-purple: var(--solana-purple);
+  --color-solana-green: var(--solana-green);
+
+  --color-accent-violet: var(--accent-violet);
+  --color-accent-violet-tint: var(--accent-violet-tint);
+  --color-accent-pink: var(--accent-pink);
+  --color-accent-pink-tint: var(--accent-pink-tint);
+  --color-accent-cyan: var(--accent-cyan);
+  --color-accent-emerald: var(--accent-emerald);
+  --color-accent-amber: var(--accent-amber);
 
   --color-success: var(--success);
   --color-success-tint: var(--success-tint);
@@ -149,6 +213,8 @@
     0 2px 4px rgb(var(--shadow-color) / 0.04), 0 8px 20px rgb(var(--shadow-color) / 0.08);
   --shadow-lg:
     0 4px 8px rgb(var(--shadow-color) / 0.05), 0 20px 48px -12px rgb(var(--shadow-color) / 0.35);
+  --shadow-glow: 0 0 0 1px color-mix(in srgb, var(--accent) 30%, transparent),
+    0 8px 24px -8px color-mix(in srgb, var(--accent) 45%, transparent);
 }
 
 .shadow-elevation-xs {
@@ -162,6 +228,9 @@
 }
 .shadow-elevation-lg {
   box-shadow: var(--shadow-lg);
+}
+.shadow-elevation-glow {
+  box-shadow: var(--shadow-glow);
 }
 
 * {
@@ -211,9 +280,9 @@ body,
   background: var(--foreground-subtle);
 }
 
-/* A soft, very low-opacity radial glow used behind hero/empty-state
-   sections — the same texture Arc/Linear lean on to avoid a flat page,
-   without resorting to a literal gradient background. */
+/* A soft, low-opacity glow used behind hero/empty-state sections — the
+   Solana brand gradient bleeding in from a corner, the same texture
+   Arc/Linear lean on to avoid a flat page. */
 .ambient-glow {
   position: relative;
 }
@@ -224,14 +293,234 @@ body,
   z-index: 0;
   pointer-events: none;
   background: radial-gradient(
-    120% 140% at 15% -10%,
-    color-mix(in srgb, var(--accent) 14%, transparent) 0%,
-    transparent 60%
-  );
+      120% 140% at 15% -10%,
+      color-mix(in srgb, var(--solana-purple) 20%, transparent) 0%,
+      transparent 60%
+    ),
+    radial-gradient(
+      100% 120% at 100% 110%,
+      color-mix(in srgb, var(--solana-green) 12%, transparent) 0%,
+      transparent 55%
+    );
 }
 .ambient-glow > * {
   position: relative;
   z-index: 1;
+}
+
+/* -----------------------------------------------------------------
+   Larger, slower-drifting aurora backdrop — for a hero section rather
+   than a single card. Three Solana-colored blooms with a very slow
+   (24s) transform-only drift so it reads as "alive" without costing
+   anything (transform/opacity are compositor-only, no layout or paint
+   thrash). Meant to be used once per screen, not stacked with
+   .ambient-glow on the same element.
+   ----------------------------------------------------------------- */
+@keyframes aurora-drift {
+  0%,
+  100% {
+    transform: translate3d(-2%, -1%, 0) rotate(0deg);
+  }
+  50% {
+    transform: translate3d(2%, 1%, 0) rotate(1deg);
+  }
+}
+.aurora-backdrop {
+  position: relative;
+  overflow: hidden;
+}
+.aurora-backdrop::before {
+  content: "";
+  position: absolute;
+  inset: -10%;
+  z-index: 0;
+  pointer-events: none;
+  will-change: transform;
+  background: radial-gradient(
+      35% 40% at 20% 20%,
+      color-mix(in srgb, var(--solana-purple) 24%, transparent) 0%,
+      transparent 70%
+    ),
+    radial-gradient(30% 35% at 80% 25%, color-mix(in srgb, var(--accent-blue) 18%, transparent) 0%, transparent 70%),
+    radial-gradient(
+      42% 46% at 50% 95%,
+      color-mix(in srgb, var(--solana-green) 16%, transparent) 0%,
+      transparent 70%
+    );
+  animation: aurora-drift 24s ease-in-out infinite;
+}
+.aurora-backdrop > * {
+  position: relative;
+  z-index: 1;
+}
+
+/* Floating blurred color blobs — a lightweight, CSS-only stand-in for
+   "particle effects": three <div class="gradient-orb gradient-orb-*">
+   placed by the consumer, absolutely positioned, huge blur radius, low
+   opacity. transform-only animation, GPU-composited. */
+.gradient-orb {
+  position: absolute;
+  border-radius: 9999px;
+  filter: blur(60px);
+  opacity: var(--orb-opacity);
+  pointer-events: none;
+  will-change: transform;
+  animation: orb-float 18s ease-in-out infinite;
+}
+.gradient-orb-purple {
+  background: var(--solana-purple);
+}
+.gradient-orb-blue {
+  background: var(--accent-blue);
+}
+.gradient-orb-green {
+  background: var(--solana-green);
+}
+@keyframes orb-float {
+  0%,
+  100% {
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+  33% {
+    transform: translate3d(3%, -4%, 0) scale(1.06);
+  }
+  66% {
+    transform: translate3d(-3%, 3%, 0) scale(0.96);
+  }
+}
+
+/* Subtle fractal-noise grain for depth on large flat gradient areas —
+   one inline SVG data-URI, no network request, ~nothing at this size. */
+.noise-texture {
+  position: relative;
+}
+.noise-texture::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  opacity: 0.03;
+  mix-blend-mode: overlay;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>");
+}
+
+/* Glassmorphism surface — translucent + blurred, for panels that sit
+   on top of an aurora/orb backdrop rather than the plain --surface. */
+.glass-panel {
+  background: color-mix(in srgb, var(--surface) 72%, transparent);
+  backdrop-filter: blur(20px) saturate(160%);
+  -webkit-backdrop-filter: blur(20px) saturate(160%);
+  border: 1px solid color-mix(in srgb, var(--border-strong) 55%, transparent);
+}
+
+/* -----------------------------------------------------------------
+   Gradient utilities — the Solana brand pairing (purple -> blue ->
+   green) used for primary CTAs and headline emphasis.
+   ----------------------------------------------------------------- */
+.gradient-brand {
+  background-image: var(--gradient-brand);
+}
+.gradient-text-brand {
+  background-image: var(--gradient-brand);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+/* Slow pulsing glow — opt-in, for the one or two primary actions per
+   screen that should draw the eye (e.g. "Select Wallet" when signed
+   out). Not applied by Button by default; add explicitly. */
+@keyframes pulse-glow {
+  0%,
+  100% {
+    box-shadow: 0 0 0 0 color-mix(in srgb, var(--solana-purple) 45%, transparent);
+  }
+  50% {
+    box-shadow: 0 0 22px 3px color-mix(in srgb, var(--solana-purple) 35%, transparent);
+  }
+}
+.pulse-glow {
+  animation: pulse-glow 2.6s ease-in-out infinite;
+}
+
+/* -----------------------------------------------------------------
+   Animated conic-gradient border — opt-in, used sparingly (e.g. an
+   intent card actually awaiting a signature) to draw the eye without
+   a static color alone. Degrades gracefully to a plain edge in browsers
+   without @property support.
+   ----------------------------------------------------------------- */
+@property --angle {
+  syntax: "<angle>";
+  inherits: false;
+  initial-value: 0deg;
+}
+@keyframes spin-border {
+  to {
+    --angle: 360deg;
+  }
+}
+.border-glow-animated {
+  position: relative;
+  isolation: isolate;
+}
+.border-glow-animated::before {
+  content: "";
+  position: absolute;
+  inset: -1px;
+  z-index: -1;
+  border-radius: inherit;
+  padding: 1.5px;
+  background: conic-gradient(
+    from var(--angle),
+    var(--solana-purple),
+    var(--accent-blue),
+    var(--solana-green),
+    var(--solana-purple)
+  );
+  -webkit-mask:
+    linear-gradient(#fff 0 0) content-box,
+    linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  animation: spin-border 4s linear infinite;
+}
+
+/* Animated gradient sweep for progress bars / allowance meters. */
+@keyframes progress-sweep {
+  0% {
+    background-position: 0% 50%;
+  }
+  100% {
+    background-position: 200% 50%;
+  }
+}
+.animate-progress-sweep {
+  background-image: linear-gradient(
+    90deg,
+    var(--solana-purple),
+    var(--accent-blue),
+    var(--solana-green),
+    var(--solana-purple)
+  );
+  background-size: 300% 100%;
+  animation: progress-sweep 3.5s linear infinite;
+}
+
+/* Expanding-circle click feedback, spawned from pointer coordinates by
+   the Button component — one shared keyframe for every button in the app. */
+@keyframes ripple-expand {
+  from {
+    transform: scale(0);
+    opacity: 0.45;
+  }
+  to {
+    transform: scale(3.2);
+    opacity: 0;
+  }
+}
+.animate-ripple {
+  animation: ripple-expand 0.6s ease-out forwards;
 }
 
 @keyframes shell-pulse {
@@ -259,7 +548,7 @@ body,
   background-image: linear-gradient(
     100deg,
     transparent 30%,
-    color-mix(in srgb, var(--foreground) 6%, transparent) 45%,
+    color-mix(in srgb, var(--accent) 14%, transparent) 45%,
     transparent 60%
   );
   background-size: 200% 100%;
@@ -293,7 +582,7 @@ body,
 }
 .wallet-adapter-button:not([disabled]):hover {
   background-color: var(--accent-hover) !important;
-  box-shadow: var(--shadow-sm) !important;
+  box-shadow: var(--shadow-glow) !important;
 }
 .wallet-adapter-button:not([disabled]):active {
   transform: scale(0.98);
@@ -325,7 +614,7 @@ body,
   border-color: var(--accent) !important;
 }
 .wallet-adapter-modal-overlay {
-  background: rgba(10, 8, 5, 0.6) !important;
+  background: rgba(4, 4, 8, 0.6) !important;
   backdrop-filter: blur(6px);
 }
 .wallet-adapter-dropdown-list {

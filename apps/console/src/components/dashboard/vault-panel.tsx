@@ -1,6 +1,7 @@
 "use client";
 
 import { PublicKey } from "@solana/web3.js";
+import { motion } from "framer-motion";
 import { ArrowDownToLine, ArrowUpFromLine, Wallet } from "lucide-react";
 import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
@@ -53,32 +54,42 @@ export function VaultPanel({
           <CardTitle>Vault</CardTitle>
           <CardDescription>Funds live here, program-owned — never in the agent&apos;s own key.</CardDescription>
         </div>
-        <Wallet className="h-4 w-4 shrink-0 text-foreground-subtle" />
+        <Wallet className="h-4 w-4 shrink-0 text-accent" />
       </CardHeader>
       <CardContent className="space-y-5">
         <div className="inline-flex rounded-lg border border-border bg-surface-raised/50 p-0.5">
           <button
             onClick={() => setMode("deposit")}
             className={cn(
-              "rounded-md px-3.5 py-1.5 text-[12px] font-medium transition-[background-color,color,box-shadow] duration-150",
-              mode === "deposit"
-                ? "bg-accent text-accent-foreground shadow-elevation-xs"
-                : "text-foreground-muted hover:text-foreground"
+              "relative rounded-md px-3.5 py-1.5 text-[12px] font-medium transition-colors duration-150",
+              mode === "deposit" ? "text-accent-foreground" : "text-foreground-muted hover:text-foreground"
             )}
           >
-            Deposit
+            {mode === "deposit" && (
+              <motion.span
+                layoutId="vault-mode-pill"
+                className="absolute inset-0 rounded-md bg-accent shadow-elevation-xs"
+                transition={{ duration: 0.2, ease: [0.22, 1, 0.36, 1] }}
+              />
+            )}
+            <span className="relative z-10">Deposit</span>
           </button>
           {isOwner && (
             <button
               onClick={() => setMode("withdraw")}
               className={cn(
-                "rounded-md px-3.5 py-1.5 text-[12px] font-medium transition-[background-color,color,box-shadow] duration-150",
-                mode === "withdraw"
-                  ? "bg-accent text-accent-foreground shadow-elevation-xs"
-                  : "text-foreground-muted hover:text-foreground"
+                "relative rounded-md px-3.5 py-1.5 text-[12px] font-medium transition-colors duration-150",
+                mode === "withdraw" ? "text-accent-foreground" : "text-foreground-muted hover:text-foreground"
               )}
             >
-              Withdraw
+              {mode === "withdraw" && (
+                <motion.span
+                  layoutId="vault-mode-pill"
+                  className="absolute inset-0 rounded-md bg-accent shadow-elevation-xs"
+                  transition={{ duration: 0.2, ease: [0.22, 1, 0.36, 1] }}
+                />
+              )}
+              <span className="relative z-10">Withdraw</span>
             </button>
           )}
         </div>

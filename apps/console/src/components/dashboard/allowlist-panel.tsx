@@ -57,6 +57,7 @@ export function AllowlistPanel({
           <CardTitle>Allow-listed destinations</CardTitle>
           <CardDescription>Only these addresses can ever receive a transfer — enforced on-chain.</CardDescription>
         </div>
+        <ListChecks className="h-4 w-4 shrink-0 text-foreground-subtle" />
       </CardHeader>
       <CardContent className="space-y-4">
         {isOwner && (

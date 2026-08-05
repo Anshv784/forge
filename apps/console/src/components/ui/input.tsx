@@ -13,7 +13,8 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
         spellCheck={false}
         className={cn(
           "h-10 w-full min-w-0 rounded-[10px] border border-border bg-surface px-3.5 text-[13px] text-foreground outline-none placeholder:text-foreground-subtle",
-          "transition-[border-color,box-shadow] duration-150 focus-visible:border-accent focus-visible:ring-3 focus-visible:ring-accent/15",
+          "transition-[border-color,box-shadow] duration-150 hover:border-border-strong",
+          "focus-visible:border-accent focus-visible:ring-3 focus-visible:ring-accent/15 focus-visible:shadow-elevation-glow",
           "disabled:cursor-not-allowed disabled:opacity-50",
           mono && "font-mono",
           className

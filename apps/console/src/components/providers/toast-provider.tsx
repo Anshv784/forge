@@ -1,7 +1,7 @@
 "use client";
 
 import { AnimatePresence, motion } from "framer-motion";
-import { CheckCircle2, ExternalLink, Info, X, XCircle } from "lucide-react";
+import { ExternalLink, Info, X, XCircle } from "lucide-react";
 import { createContext, useCallback, useContext, useMemo, useState } from "react";
 import { createPortal } from "react-dom";
 import { cn } from "@/lib/utils";
@@ -22,8 +22,38 @@ interface ToastContextValue {
 
 const ToastContext = createContext<ToastContextValue | null>(null);
 
+/** A hand-drawn success check — the circle and check stroke themselves on
+ * in sequence via animated `pathLength`, the same "confirmed" beat wallet
+ * apps (Phantom, Backpack) use for a landed transaction. */
+function AnimatedCheck() {
+  return (
+    <svg width={16} height={16} viewBox="0 0 24 24" fill="none" className="text-success">
+      <motion.circle
+        cx="12"
+        cy="12"
+        r="10"
+        stroke="currentColor"
+        strokeWidth="2"
+        initial={{ pathLength: 0, opacity: 0.4 }}
+        animate={{ pathLength: 1, opacity: 1 }}
+        transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
+      />
+      <motion.path
+        d="M7.5 12.5 10.5 15.5 16.5 9"
+        stroke="currentColor"
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        initial={{ pathLength: 0 }}
+        animate={{ pathLength: 1 }}
+        transition={{ duration: 0.25, delay: 0.3, ease: "easeOut" }}
+      />
+    </svg>
+  );
+}
+
 const toneIcon: Record<ToastTone, React.ReactNode> = {
-  success: <CheckCircle2 className="h-4 w-4 text-success" />,
+  success: <AnimatedCheck />,
   error: <XCircle className="h-4 w-4 text-danger" />,
   info: <Info className="h-4 w-4 text-info" />,
 };
@@ -65,10 +95,10 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
                 <motion.div
                   key={t.id}
                   layout
-                  initial={{ opacity: 0, y: 16, scale: 0.95 }}
+                  initial={{ opacity: 0, y: 20, scale: 0.92 }}
                   animate={{ opacity: 1, y: 0, scale: 1 }}
-                  exit={{ opacity: 0, x: 40, scale: 0.95 }}
-                  transition={{ duration: 0.2, ease: [0.22, 1, 0.36, 1] }}
+                  exit={{ opacity: 0, x: 40, scale: 0.95, transition: { duration: 0.15 } }}
+                  transition={{ type: "spring", stiffness: 460, damping: 34 }}
                   className={cn(
                     "shadow-elevation-lg pointer-events-auto relative flex items-start gap-2.5 overflow-hidden rounded-xl border border-border bg-surface-raised py-3.5 pl-4 pr-3.5",
                     "before:absolute before:inset-y-0 before:left-0 before:w-0.75 before:content-['']",

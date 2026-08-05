@@ -37,7 +37,9 @@ export function PolicyHero({
             <span className="text-[12.5px] text-foreground-subtle">Agent #{policy.agentIndex}</span>
           </div>
           <h1 className="font-display text-[32px] font-medium leading-none tracking-[-0.02em] tabular-nums text-foreground">
-            {solVaultBalance !== null ? formatLamports(solVaultBalance) : "—"}
+            <span className="gradient-text-brand">
+              {solVaultBalance !== null ? formatLamports(solVaultBalance) : "—"}
+            </span>
             <span className="ml-2.5 font-sans text-sm font-normal tracking-normal text-foreground-subtle">
               in vault
             </span>

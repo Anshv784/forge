@@ -46,20 +46,21 @@ export function Modal({
             exit={{ opacity: 0 }}
             transition={{ duration: 0.15 }}
             onClick={onClose}
-            className="absolute inset-0 bg-black/55 backdrop-blur-sm"
+            className="absolute inset-0 bg-black/60 backdrop-blur-md"
           />
           <motion.div
-            initial={{ opacity: 0, scale: 0.96, y: 10 }}
+            initial={{ opacity: 0, scale: 0.94, y: 14 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
-            exit={{ opacity: 0, scale: 0.97, y: 6 }}
-            transition={{ duration: 0.18, ease: [0.22, 1, 0.36, 1] }}
+            exit={{ opacity: 0, scale: 0.96, y: 8 }}
+            transition={{ type: "spring", stiffness: 420, damping: 32 }}
             className={cn(
-              "shadow-elevation-lg relative w-full max-w-md rounded-2xl border border-border bg-surface-raised p-5",
+              "shadow-elevation-lg relative w-full max-w-md overflow-hidden rounded-2xl border border-border bg-surface-raised p-5",
               className
             )}
             role="dialog"
             aria-modal="true"
           >
+            <div aria-hidden className="gradient-brand absolute inset-x-0 top-0 h-0.75" />
             <div className="mb-4 flex items-start justify-between gap-4">
               <div>
                 <h2 className="font-display text-base font-medium tracking-[-0.011em] text-foreground">
