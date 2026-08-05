@@ -1,15 +1,18 @@
 # Carapace Console
 
-The human-facing side of Carapace: view a policy's live spending caps and
-allowance, approve or deny pending Intents (wallet-signed), and see a
-verifiable activity feed decoded straight from on-chain event logs. See the
-[repo root README](../../README.md) and [`docs/ARCHITECTURE.md`](../../docs/ARCHITECTURE.md)
-for how this fits into the rest of Carapace.
+The human-facing half of Carapace: view a policy's live spending caps and
+allowance, approve or deny pending Intents (wallet-signed), manage the
+allow-list/limits/vault/delegate, create a brand-new policy from the
+browser, and see a verifiable activity feed decoded straight from on-chain
+event logs.
+
+See the [repo root README](../../README.md) for the full system and
+[`docs/ARCHITECTURE.md`](../../docs/ARCHITECTURE.md) for how this fits in.
 
 This app reads on-chain state directly via `@solana/web3.js` and
-`@coral-xyz/anchor` — there is no backend/database beyond Solana's own RPC
-and the Blinks API routes (`src/app/api/actions/`), which build unsigned
-transactions server-side but never hold a key of their own.
+`@coral-xyz/anchor` — there is no backend or database beyond Solana's own
+RPC and the two Blinks API routes below, which build unsigned transactions
+server-side but never hold a key of their own.
 
 ## Running it
 
@@ -22,11 +25,12 @@ Open `http://localhost:3000`. Connect any Wallet-Standard-compliant wallet
 (Phantom, Solflare, Backpack, ...) — no explicit adapter wiring needed, they
 auto-register themselves.
 
-For a quick local loop with no devnet funds required, see the root
-`docs/SETUP.md` for spinning up `surfpool` (a local validator), deploying
-`programs/carapace`, and running `programs/carapace/manual/init-test-policy.js`
-to create a funded, allow-listed test policy — then select **Localnet** from
-the cluster dropdown in the header.
+For a local loop with no devnet funds required: see the root
+[`docs/SETUP.md`](../../docs/SETUP.md) for spinning up `surfpool` (a local
+validator), deploying `programs/carapace`, and running
+`programs/carapace/manual/init-test-policy.js` to create a funded,
+allow-listed test policy — then select **Localnet** from the cluster
+dropdown in the header.
 
 ## Environment variables
 
@@ -36,7 +40,7 @@ anything beyond local development; public RPC endpoints are rate-limited):
 
 | Variable | Default | Purpose |
 |---|---|---|
-| `NEXT_PUBLIC_CARAPACE_PROGRAM_ID` | the program ID this repo deploys (`GuZ6yoSDkTcYh2PKAeoDdb51ZhP9i7pRhL6MGrZXST8L`) | Override if you deployed your own instance with a different program keypair. |
+| `NEXT_PUBLIC_CARAPACE_PROGRAM_ID` | `GuZ6yoSDkTcYh2PKAeoDdb51ZhP9i7pRhL6MGrZXST8L` | Override if you deployed your own program instance under a different keypair. |
 | `NEXT_PUBLIC_DEVNET_RPC_URL` | `https://api.devnet.solana.com` | Point at Helius/QuickNode/etc. for a devnet endpoint that isn't rate-limited. |
 | `NEXT_PUBLIC_MAINNET_RPC_URL` | `https://api.mainnet-beta.solana.com` | Same, for mainnet-beta. |
 | `NEXT_PUBLIC_LOCALNET_RPC_URL` | `http://127.0.0.1:8899` | Only needed if your local validator runs on a non-default port. |
@@ -75,3 +79,25 @@ No environment-specific build step beyond the variables above — this is a
 static-friendly Next.js app (App Router, mostly client components) plus two
 lightweight Node.js Route Handlers for the Blinks endpoint, deployable
 anywhere Next.js runs (Vercel, or any Node host).
+
+## Project layout
+
+```
+src/
+├── app/
+│   ├── page.tsx                  The whole dashboard (single route)
+│   ├── layout.tsx                 Providers, fonts, theme-flash prevention
+│   └── api/actions/intent/[intent]/route.ts   Blinks GET/POST
+├── components/
+│   ├── ui/                       Design-system primitives (Button, Card, Modal, ...)
+│   ├── dashboard/                 Policy hero, allowance gauges, management panels
+│   ├── layout/                    Header, theme toggle, cluster select
+│   └── providers/                 Wallet, cluster, theme, toast contexts
+├── hooks/                         use-policy, use-intents, use-receipts,
+│                                  use-allowlist, use-carapace-actions,
+│                                  use-carapace-program
+└── lib/
+    ├── carapace/                  Program client, PDA derivation, checked-in IDL
+    ├── config.ts                  Cluster options, program ID, explorer links
+    └── utils.ts                   Formatting helpers
+```
