@@ -7,7 +7,7 @@ import { cn } from "@/lib/utils";
 export function RadialGauge({
   fraction,
   size = 88,
-  strokeWidth = 8,
+  strokeWidth = 7,
   tone = "accent",
   className,
 }: {
@@ -48,7 +48,7 @@ export function RadialGauge({
         strokeDasharray={circumference}
         strokeDashoffset={offset}
         strokeLinecap="round"
-        style={{ transition: "stroke-dashoffset 0.6s cubic-bezier(0.22, 1, 0.36, 1)" }}
+        style={{ transition: "stroke-dashoffset 0.7s cubic-bezier(0.22, 1, 0.36, 1), stroke 0.3s ease" }}
       />
     </svg>
   );

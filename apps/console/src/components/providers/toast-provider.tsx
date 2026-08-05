@@ -28,6 +28,12 @@ const toneIcon: Record<ToastTone, React.ReactNode> = {
   info: <Info className="h-4 w-4 text-info" />,
 };
 
+const toneAccent: Record<ToastTone, string> = {
+  success: "before:bg-success",
+  error: "before:bg-danger",
+  info: "before:bg-info",
+};
+
 const DURATION_MS = 6000;
 
 export function ToastProvider({ children }: { children: React.ReactNode }) {
@@ -64,21 +70,23 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
                   exit={{ opacity: 0, x: 40, scale: 0.95 }}
                   transition={{ duration: 0.2, ease: [0.22, 1, 0.36, 1] }}
                   className={cn(
-                    "pointer-events-auto flex items-start gap-2.5 rounded-xl border border-border bg-surface-raised p-3.5 shadow-[0_12px_36px_-12px_rgba(0,0,0,0.4)]"
+                    "shadow-elevation-lg pointer-events-auto relative flex items-start gap-2.5 overflow-hidden rounded-xl border border-border bg-surface-raised py-3.5 pl-4 pr-3.5",
+                    "before:absolute before:inset-y-0 before:left-0 before:w-0.75 before:content-['']",
+                    toneAccent[t.tone]
                   )}
                 >
                   <div className="mt-0.5 shrink-0">{toneIcon[t.tone]}</div>
                   <div className="min-w-0 flex-1">
-                    <p className="text-[13px] font-medium text-foreground">{t.title}</p>
+                    <p className="text-[13px] font-medium tracking-[-0.006em] text-foreground">{t.title}</p>
                     {t.description && (
-                      <p className="mt-0.5 wrap-break-word text-[12px] text-foreground-subtle">{t.description}</p>
+                      <p className="mt-0.5 wrap-break-word text-[12px] leading-relaxed text-foreground-subtle">{t.description}</p>
                     )}
                     {t.href && (
                       <a
                         href={t.href}
                         target="_blank"
                         rel="noreferrer"
-                        className="mt-1.5 inline-flex items-center gap-1 text-[12px] font-medium text-accent hover:text-accent-hover"
+                        className="mt-1.5 inline-flex items-center gap-1 rounded text-[12px] font-medium text-accent transition-colors duration-150 hover:text-accent-hover focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-accent/50"
                       >
                         View on explorer <ExternalLink className="h-3 w-3" />
                       </a>
@@ -86,7 +94,7 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
                   </div>
                   <button
                     onClick={() => dismiss(t.id)}
-                    className="shrink-0 text-foreground-subtle transition-colors hover:text-foreground"
+                    className="shrink-0 rounded text-foreground-subtle transition-colors duration-150 hover:text-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-accent/50"
                     aria-label="Dismiss"
                   >
                     <X className="h-3.5 w-3.5" />

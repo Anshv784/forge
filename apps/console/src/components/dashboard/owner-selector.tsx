@@ -19,28 +19,30 @@ export function OwnerSelector({
   canReset: boolean;
 }) {
   return (
-    <div className="flex flex-col gap-3 rounded-xl border border-border bg-surface-raised/50 p-3 sm:flex-row sm:items-center">
-      <div className="flex flex-1 items-center gap-2">
-        <label className="text-[12px] font-medium text-foreground-subtle whitespace-nowrap">Viewing owner</label>
+    <div className="flex flex-col gap-3 rounded-xl border border-border bg-surface-raised/60 p-3 sm:flex-row sm:items-center">
+      <div className="flex flex-1 items-center gap-2.5">
+        <label className="whitespace-nowrap text-[11.5px] font-medium uppercase tracking-wide text-foreground-subtle">
+          Viewing owner
+        </label>
         <input
           value={ownerInput}
           onChange={(e) => onOwnerInputChange(e.target.value)}
           placeholder="Owner wallet address"
           spellCheck={false}
-          className="w-full min-w-0 rounded-lg border border-border bg-transparent px-3 py-1.5 font-mono text-[13px] text-foreground outline-none focus-visible:ring-2 focus-visible:ring-accent/50"
+          className="w-full min-w-0 rounded-lg border border-border bg-transparent px-3 py-1.5 font-mono text-[13px] text-foreground outline-none transition-[border-color,box-shadow] duration-150 focus-visible:border-accent focus-visible:ring-3 focus-visible:ring-accent/15"
         />
         {canReset && (
           <button
             onClick={onResetToWallet}
             title="Reset to my connected wallet"
-            className="shrink-0 text-foreground-subtle hover:text-foreground"
+            className="shrink-0 rounded text-foreground-subtle transition-colors duration-150 hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/40"
           >
             <RotateCcw className="h-3.5 w-3.5" />
           </button>
         )}
       </div>
       <div className="flex items-center gap-2">
-        <span className="text-[12px] font-medium text-foreground-subtle">Agent</span>
+        <span className="text-[11.5px] font-medium uppercase tracking-wide text-foreground-subtle">Agent</span>
         <div className="flex items-center rounded-lg border border-border">
           <Button
             variant="ghost"
@@ -50,7 +52,7 @@ export function OwnerSelector({
           >
             <Minus className="h-3 w-3" />
           </Button>
-          <span className="w-8 text-center font-mono text-[13px]">{agentIndex}</span>
+          <span className="w-8 text-center font-mono text-[13px] tabular-nums">{agentIndex}</span>
           <Button
             variant="ghost"
             size="sm"

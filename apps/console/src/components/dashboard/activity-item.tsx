@@ -20,7 +20,7 @@ function describe(event: ReceiptEvent, explorerCluster: string): { icon: React.R
         icon: <ArrowUpRight className="h-3.5 w-3.5 text-success" />,
         text: (
           <>
-            Executed <span className="font-medium text-foreground">{assetAmount(d.asset, d.amount)}</span> to{" "}
+            Executed <span className="font-medium tabular-nums text-foreground">{assetAmount(d.asset, d.amount)}</span> to{" "}
             <Address value={addr("destination")} href={solscanAddressUrl(addr("destination"), explorerCluster)} />
           </>
         ),
@@ -30,7 +30,7 @@ function describe(event: ReceiptEvent, explorerCluster: string): { icon: React.R
         icon: <CircleDot className="h-3.5 w-3.5 text-warning" />,
         text: (
           <>
-            Proposed <span className="font-medium text-foreground">{assetAmount(d.asset, d.amount)}</span> to{" "}
+            Proposed <span className="font-medium tabular-nums text-foreground">{assetAmount(d.asset, d.amount)}</span> to{" "}
             <Address value={addr("destination")} href={solscanAddressUrl(addr("destination"), explorerCluster)} />
           </>
         ),
@@ -60,7 +60,7 @@ function describe(event: ReceiptEvent, explorerCluster: string): { icon: React.R
 export function ActivityItem({ event, explorerCluster }: { event: ReceiptEvent; explorerCluster: string }) {
   const { icon, text } = describe(event, explorerCluster);
   return (
-    <div className="flex items-start gap-3 py-3">
+    <div className="flex items-start gap-3 py-3 transition-colors duration-150 first:pt-0 last:pb-0">
       <div className="mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-surface-raised">
         {icon}
       </div>
@@ -72,7 +72,7 @@ export function ActivityItem({ event, explorerCluster }: { event: ReceiptEvent; 
             href={solscanTxUrl(event.signature, explorerCluster)}
             target="_blank"
             rel="noreferrer"
-            className="font-mono hover:text-accent"
+            className="rounded font-mono transition-colors duration-150 hover:text-accent focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-accent/50"
           >
             {event.signature.slice(0, 8)}…
           </a>

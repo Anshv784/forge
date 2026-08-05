@@ -46,15 +46,15 @@ export function Modal({
             exit={{ opacity: 0 }}
             transition={{ duration: 0.15 }}
             onClick={onClose}
-            className="absolute inset-0 bg-black/50 backdrop-blur-sm"
+            className="absolute inset-0 bg-black/55 backdrop-blur-sm"
           />
           <motion.div
-            initial={{ opacity: 0, scale: 0.96, y: 8 }}
+            initial={{ opacity: 0, scale: 0.96, y: 10 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
-            exit={{ opacity: 0, scale: 0.96, y: 8 }}
+            exit={{ opacity: 0, scale: 0.97, y: 6 }}
             transition={{ duration: 0.18, ease: [0.22, 1, 0.36, 1] }}
             className={cn(
-              "relative w-full max-w-md rounded-2xl border border-border bg-surface-raised p-5 shadow-[0_20px_60px_-20px_rgba(0,0,0,0.45)]",
+              "shadow-elevation-lg relative w-full max-w-md rounded-2xl border border-border bg-surface-raised p-5",
               className
             )}
             role="dialog"
@@ -62,12 +62,16 @@ export function Modal({
           >
             <div className="mb-4 flex items-start justify-between gap-4">
               <div>
-                <h2 className="font-display text-base font-medium text-foreground">{title}</h2>
-                {description && <p className="mt-1 text-[13px] text-foreground-subtle">{description}</p>}
+                <h2 className="font-display text-base font-medium tracking-[-0.011em] text-foreground">
+                  {title}
+                </h2>
+                {description && (
+                  <p className="mt-1 text-[13px] leading-relaxed text-foreground-subtle">{description}</p>
+                )}
               </div>
               <button
                 onClick={onClose}
-                className="shrink-0 rounded-lg p-1 text-foreground-subtle transition-colors hover:bg-surface hover:text-foreground"
+                className="shrink-0 rounded-lg p-1 text-foreground-subtle transition-colors duration-150 hover:bg-surface hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/40"
                 aria-label="Close"
               >
                 <X className="h-4 w-4" />

@@ -12,8 +12,8 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
         ref={ref}
         spellCheck={false}
         className={cn(
-          "h-10 w-full min-w-0 rounded-lg border border-border bg-surface px-3 text-[13px] text-foreground outline-none placeholder:text-foreground-subtle",
-          "transition-colors focus-visible:border-accent focus-visible:ring-2 focus-visible:ring-accent/30",
+          "h-10 w-full min-w-0 rounded-[10px] border border-border bg-surface px-3.5 text-[13px] text-foreground outline-none placeholder:text-foreground-subtle",
+          "transition-[border-color,box-shadow] duration-150 focus-visible:border-accent focus-visible:ring-3 focus-visible:ring-accent/15",
           "disabled:cursor-not-allowed disabled:opacity-50",
           mono && "font-mono",
           className
@@ -38,7 +38,7 @@ export function Field({
     <label className="block space-y-1.5">
       <span className="text-[12px] font-medium text-foreground-muted">{label}</span>
       {children}
-      {hint && <span className="block text-[11px] text-foreground-subtle">{hint}</span>}
+      {hint && <span className="block text-[11.5px] leading-relaxed text-foreground-subtle">{hint}</span>}
     </label>
   );
 }

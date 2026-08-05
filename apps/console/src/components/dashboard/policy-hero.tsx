@@ -27,24 +27,22 @@ export function PolicyHero({
   pausePending: boolean;
 }) {
   return (
-    <div className="relative overflow-hidden rounded-2xl border border-border bg-surface">
-      <div
-        className="pointer-events-none absolute -right-16 -top-24 h-64 w-64 rounded-full opacity-[0.15] blur-3xl"
-        style={{ background: "var(--accent)" }}
-      />
-      <div className="relative flex flex-col gap-6 p-6 sm:flex-row sm:items-center sm:justify-between">
-        <div className="space-y-3">
+    <div className="ambient-glow relative overflow-hidden rounded-2xl border border-border bg-surface shadow-elevation-sm">
+      <div className="relative flex flex-col gap-7 p-6 sm:flex-row sm:items-center sm:justify-between sm:p-7">
+        <div className="space-y-3.5">
           <div className="flex flex-wrap items-center gap-2">
             <Badge tone={policy.paused ? "danger" : "success"} dot>
               {policy.paused ? "Paused" : "Active"}
             </Badge>
-            <span className="text-[13px] text-foreground-subtle">Agent #{policy.agentIndex}</span>
+            <span className="text-[12.5px] text-foreground-subtle">Agent #{policy.agentIndex}</span>
           </div>
-          <h1 className="font-display text-2xl font-medium tracking-tight text-foreground">
+          <h1 className="font-display text-[32px] font-medium leading-none tracking-[-0.02em] tabular-nums text-foreground">
             {solVaultBalance !== null ? formatLamports(solVaultBalance) : "—"}
-            <span className="ml-2 text-sm font-normal text-foreground-subtle">in vault</span>
+            <span className="ml-2.5 font-sans text-sm font-normal tracking-normal text-foreground-subtle">
+              in vault
+            </span>
           </h1>
-          <dl className="grid grid-cols-2 gap-x-8 gap-y-1.5 text-[13px] sm:flex sm:gap-8">
+          <dl className="grid grid-cols-2 gap-x-8 gap-y-2 text-[13px] sm:flex sm:gap-8">
             <div className="flex items-baseline gap-2">
               <dt className="text-foreground-subtle">Owner</dt>
               <dd>
@@ -68,18 +66,18 @@ export function PolicyHero({
             </div>
             <div className="flex items-baseline gap-2">
               <dt className="text-foreground-subtle">Executed</dt>
-              <dd className="font-mono text-foreground-muted">{policy.totalExecutedCount.toString()}×</dd>
+              <dd className="font-mono tabular-nums text-foreground-muted">{policy.totalExecutedCount.toString()}×</dd>
             </div>
           </dl>
           {policy.expiresAt > 0 && (
-            <p className="text-[13px] text-foreground-subtle">
+            <p className="text-[12.5px] text-foreground-subtle">
               Policy expires {formatRelativeTime(policy.expiresAt)}
             </p>
           )}
         </div>
 
         {isOwner && (
-          <div className="flex shrink-0 flex-col items-start gap-2 sm:items-end">
+          <div className="flex shrink-0 flex-col items-start gap-2.5 sm:items-end">
             <Button
               variant={policy.paused ? "primary" : "danger"}
               onClick={onTogglePause}
@@ -95,7 +93,7 @@ export function PolicyHero({
                 </>
               )}
             </Button>
-            <p className="max-w-[220px] text-right text-[11px] text-foreground-subtle">
+            <p className="max-w-55 text-right text-[11.5px] leading-relaxed text-foreground-subtle">
               {policy.paused
                 ? "The delegate cannot propose or execute anything until resumed."
                 : "Instantly blocks the delegate from proposing or executing. You can still withdraw."}

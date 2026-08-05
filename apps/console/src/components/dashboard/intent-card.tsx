@@ -58,7 +58,7 @@ export function IntentCard({
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: -6 }}
       transition={{ duration: 0.2 }}
-      className="rounded-xl border border-border bg-surface p-4"
+      className="rounded-xl border border-border bg-surface p-4 shadow-elevation-xs transition-[border-color,box-shadow] duration-200 hover:border-border-strong"
     >
       <div className="flex items-start justify-between gap-3">
         <div className="min-w-0 space-y-1.5">
@@ -66,20 +66,20 @@ export function IntentCard({
             <Badge tone={isExpired ? "neutral" : statusTone[intent.status]} dot>
               {isExpired ? "expired" : intent.status}
             </Badge>
-            <span className="font-mono text-[11px] text-foreground-subtle">nonce {intent.nonce.toString()}</span>
+            <span className="font-mono text-[11px] tabular-nums text-foreground-subtle">nonce {intent.nonce.toString()}</span>
             {intent.status === "pending" && !isExpired && (
               <button
                 onClick={copyBlinkLink}
                 title="Copy a Blink link — approve from any wallet, on any device"
-                className="flex items-center gap-1 text-[11px] text-foreground-subtle hover:text-accent"
+                className="flex items-center gap-1 rounded text-[11px] text-foreground-subtle transition-colors duration-150 hover:text-accent focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-accent/50"
               >
                 <Link2 className="h-3 w-3" />
                 {linkCopied ? "Copied" : "Blink link"}
               </button>
             )}
           </div>
-          <div className="flex items-center gap-1.5 font-display text-base font-medium text-foreground">
-            <span>{amountLabel}</span>
+          <div className="flex items-center gap-1.5 font-display text-base font-medium tracking-[-0.011em] text-foreground">
+            <span className="tabular-nums">{amountLabel}</span>
             <ArrowRight className="h-3.5 w-3.5 text-foreground-subtle" />
             <Address
               value={intent.destination.toBase58()}

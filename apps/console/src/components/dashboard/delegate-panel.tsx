@@ -58,7 +58,7 @@ export function DelegatePanel({
       </CardHeader>
       <CardContent className="space-y-4">
         <div className="flex items-center justify-between rounded-xl border border-border bg-surface-raised/50 px-3.5 py-2.5">
-          <span className="text-[12px] text-foreground-subtle">Current</span>
+          <span className="text-[11.5px] font-medium uppercase tracking-wide text-foreground-subtle">Current</span>
           <Address value={currentDelegate.toBase58()} href={solscanAddressUrl(currentDelegate.toBase58(), explorerCluster)} chars={6} />
         </div>
 
@@ -91,9 +91,9 @@ export function DelegatePanel({
         title="Rotate the delegate key?"
         description="Your current agent will stop working immediately — it holds the old key and has no way to get the new one automatically."
       >
-        <div className="mb-4 flex items-start gap-2 rounded-xl border border-warning/30 bg-warning-tint px-3.5 py-3 text-[12px] text-warning">
+        <div className="mb-4 flex items-start gap-2 rounded-xl border border-warning/30 bg-warning-tint px-3.5 py-3 text-[12px] leading-relaxed text-warning">
           <AlertTriangle className="mt-0.5 h-3.5 w-3.5 shrink-0" />
-          <span>You'll need to update your agent's config with the new delegate's secret key before it can act again.</span>
+          <span>You&apos;ll need to update your agent&apos;s config with the new delegate&apos;s secret key before it can act again.</span>
         </div>
         <div className="flex justify-end gap-2">
           <Button variant="secondary" onClick={() => setConfirmOpen(false)}>

@@ -91,71 +91,81 @@ export function LimitsPanel({
         </div>
         <Settings2 className="h-4 w-4 shrink-0 text-foreground-subtle" />
       </CardHeader>
-      <CardContent className="space-y-5">
-        <div className="grid gap-4 sm:grid-cols-3">
-          <Field label="Max per transaction (SOL)">
-            <Input
-              type="number"
-              min="0"
-              step="any"
-              disabled={!isOwner}
-              value={form.maxPerTxSol}
-              onChange={(e) => set("maxPerTxSol", e.target.value)}
-            />
-          </Field>
-          <Field label="Max per day (SOL)">
-            <Input
-              type="number"
-              min="0"
-              step="any"
-              disabled={!isOwner}
-              value={form.maxDailySol}
-              onChange={(e) => set("maxDailySol", e.target.value)}
-            />
-          </Field>
-          <Field label="Approval threshold (SOL)" hint="Above this, an Intent must be approved first.">
-            <Input
-              type="number"
-              min="0"
-              step="any"
-              disabled={!isOwner}
-              value={form.approvalThresholdSol}
-              onChange={(e) => set("approvalThresholdSol", e.target.value)}
-            />
-          </Field>
+      <CardContent className="space-y-6">
+        <div className="space-y-3">
+          <p className="text-[10.5px] font-semibold uppercase tracking-wider text-foreground-subtle">SOL</p>
+          <div className="grid gap-4 sm:grid-cols-3">
+            <Field label="Max per transaction">
+              <Input
+                type="number"
+                min="0"
+                step="any"
+                disabled={!isOwner}
+                value={form.maxPerTxSol}
+                onChange={(e) => set("maxPerTxSol", e.target.value)}
+              />
+            </Field>
+            <Field label="Max per day">
+              <Input
+                type="number"
+                min="0"
+                step="any"
+                disabled={!isOwner}
+                value={form.maxDailySol}
+                onChange={(e) => set("maxDailySol", e.target.value)}
+              />
+            </Field>
+            <Field label="Approval threshold" hint="Above this, an Intent must be approved first.">
+              <Input
+                type="number"
+                min="0"
+                step="any"
+                disabled={!isOwner}
+                value={form.approvalThresholdSol}
+                onChange={(e) => set("approvalThresholdSol", e.target.value)}
+              />
+            </Field>
+          </div>
         </div>
-        <div className="grid gap-4 sm:grid-cols-3">
-          <Field label="Max per transaction (SPL)">
-            <Input
-              type="number"
-              min="0"
-              step="any"
-              disabled={!isOwner}
-              value={form.maxPerTxTok}
-              onChange={(e) => set("maxPerTxTok", e.target.value)}
-            />
-          </Field>
-          <Field label="Max per day (SPL)">
-            <Input
-              type="number"
-              min="0"
-              step="any"
-              disabled={!isOwner}
-              value={form.maxDailyTok}
-              onChange={(e) => set("maxDailyTok", e.target.value)}
-            />
-          </Field>
-          <Field label="Approval threshold (SPL)">
-            <Input
-              type="number"
-              min="0"
-              step="any"
-              disabled={!isOwner}
-              value={form.approvalThresholdTok}
-              onChange={(e) => set("approvalThresholdTok", e.target.value)}
-            />
-          </Field>
+
+        <div className="h-px bg-border" />
+
+        <div className="space-y-3">
+          <p className="text-[10.5px] font-semibold uppercase tracking-wider text-foreground-subtle">SPL token</p>
+          <div className="grid gap-4 sm:grid-cols-3">
+            <Field label="Max per transaction">
+              <Input
+                type="number"
+                min="0"
+                step="any"
+                disabled={!isOwner}
+                value={form.maxPerTxTok}
+                onChange={(e) => set("maxPerTxTok", e.target.value)}
+              />
+            </Field>
+            <Field label="Max per day">
+              <Input
+                type="number"
+                min="0"
+                step="any"
+                disabled={!isOwner}
+                value={form.maxDailyTok}
+                onChange={(e) => set("maxDailyTok", e.target.value)}
+              />
+            </Field>
+            <Field label="Approval threshold">
+              <Input
+                type="number"
+                min="0"
+                step="any"
+                disabled={!isOwner}
+                value={form.approvalThresholdTok}
+                onChange={(e) => set("approvalThresholdTok", e.target.value)}
+              />
+            </Field>
+          </div>
         </div>
+
         {isOwner && (
           <div className="flex justify-end">
             <Button onClick={handleSave} loading={pending}>

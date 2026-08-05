@@ -21,13 +21,13 @@ export function Badge({ className, tone = "neutral", dot, children, ...props }: 
   return (
     <span
       className={cn(
-        "inline-flex items-center gap-1.5 rounded-full border px-2.5 py-1 text-[11px] font-medium uppercase tracking-wide",
+        "inline-flex items-center gap-1.5 rounded-full border px-2.5 py-1 text-[10.5px] font-semibold uppercase tracking-wider",
         toneStyles[tone],
         className
       )}
       {...props}
     >
-      {dot && <span className="h-1.5 w-1.5 rounded-full bg-current" />}
+      {dot && <span className="h-1.5 w-1.5 shrink-0 rounded-full bg-current" />}
       {children}
     </span>
   );

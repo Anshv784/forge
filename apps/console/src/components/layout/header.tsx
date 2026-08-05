@@ -14,14 +14,14 @@ const WalletMultiButton = dynamic(
 
 export function Header() {
   return (
-    <header className="sticky top-0 z-30 border-b border-border bg-background/85 backdrop-blur-md">
-      <div className="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-x-4 gap-y-2.5 px-4 py-3 sm:px-6">
+    <header className="sticky top-0 z-30 border-b border-border bg-background/80 backdrop-blur-xl backdrop-saturate-150">
+      <div className="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-x-4 gap-y-2.5 px-4 py-3.5 sm:px-6">
         <div className="flex items-center gap-2.5 text-accent">
           <ShellMark size={26} />
-          <span className="font-display text-[17px] font-medium tracking-tight text-foreground">
+          <span className="font-display text-[17px] font-medium tracking-[-0.014em] text-foreground">
             Carapace
           </span>
-          <span className="hidden rounded-full border border-border px-2 py-0.5 text-[10px] font-medium uppercase tracking-wider text-foreground-subtle sm:inline-block">
+          <span className="hidden rounded-full border border-border px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-foreground-subtle sm:inline-block">
             Console
           </span>
         </div>

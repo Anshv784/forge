@@ -55,13 +55,15 @@ export function VaultPanel({
         </div>
         <Wallet className="h-4 w-4 shrink-0 text-foreground-subtle" />
       </CardHeader>
-      <CardContent className="space-y-4">
-        <div className="inline-flex rounded-lg border border-border p-0.5">
+      <CardContent className="space-y-5">
+        <div className="inline-flex rounded-lg border border-border bg-surface-raised/50 p-0.5">
           <button
             onClick={() => setMode("deposit")}
             className={cn(
-              "rounded-md px-3 py-1.5 text-[12px] font-medium transition-colors",
-              mode === "deposit" ? "bg-accent text-accent-foreground" : "text-foreground-muted hover:text-foreground"
+              "rounded-md px-3.5 py-1.5 text-[12px] font-medium transition-[background-color,color,box-shadow] duration-150",
+              mode === "deposit"
+                ? "bg-accent text-accent-foreground shadow-elevation-xs"
+                : "text-foreground-muted hover:text-foreground"
             )}
           >
             Deposit
@@ -70,8 +72,10 @@ export function VaultPanel({
             <button
               onClick={() => setMode("withdraw")}
               className={cn(
-                "rounded-md px-3 py-1.5 text-[12px] font-medium transition-colors",
-                mode === "withdraw" ? "bg-accent text-accent-foreground" : "text-foreground-muted hover:text-foreground"
+                "rounded-md px-3.5 py-1.5 text-[12px] font-medium transition-[background-color,color,box-shadow] duration-150",
+                mode === "withdraw"
+                  ? "bg-accent text-accent-foreground shadow-elevation-xs"
+                  : "text-foreground-muted hover:text-foreground"
               )}
             >
               Withdraw

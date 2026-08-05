@@ -9,23 +9,28 @@ const points = [
 
 export function ConnectPrompt() {
   return (
-    <div className="flex flex-col items-center justify-center gap-8 py-24 text-center">
-      <div className="text-accent">
-        <ShellMark size={56} />
+    <div className="ambient-glow flex flex-col items-center justify-center gap-9 rounded-3xl py-24 text-center">
+      <div className="flex h-16 w-16 items-center justify-center rounded-2xl border border-border bg-surface text-accent shadow-elevation-sm">
+        <ShellMark size={32} />
       </div>
-      <div className="max-w-md space-y-2">
-        <h1 className="font-display text-2xl font-medium tracking-tight text-foreground">
+      <div className="max-w-md space-y-2.5">
+        <h1 className="font-display text-[28px] font-medium tracking-[-0.018em] text-foreground">
           Connect a wallet to view your agent
         </h1>
-        <p className="text-[15px] text-foreground-subtle">
+        <p className="text-[15px] leading-relaxed text-foreground-subtle">
           Carapace shows the live on-chain policy for whichever wallet you connect — spending caps,
           pending approvals, and a full audit trail your agent's host can't fake.
         </p>
       </div>
       <div className="grid w-full max-w-lg gap-3 sm:grid-cols-3">
         {points.map(({ icon: Icon, text }) => (
-          <div key={text} className="flex flex-col items-center gap-2 rounded-xl border border-border bg-surface p-4">
-            <Icon className="h-4 w-4 text-accent" />
+          <div
+            key={text}
+            className="flex flex-col items-center gap-2.5 rounded-2xl border border-border bg-surface p-4 shadow-elevation-xs transition-[border-color,box-shadow] duration-200 hover:border-border-strong hover:shadow-elevation-sm"
+          >
+            <div className="flex h-8 w-8 items-center justify-center rounded-full bg-accent-tint text-accent">
+              <Icon className="h-4 w-4" />
+            </div>
             <p className="text-[12px] leading-snug text-foreground-subtle">{text}</p>
           </div>
         ))}

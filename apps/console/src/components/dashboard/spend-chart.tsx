@@ -52,7 +52,7 @@ export function SpendChart({ receipts }: { receipts: ReceiptEvent[] }) {
               <AreaChart data={series} margin={{ top: 8, right: 8, left: 0, bottom: 0 }}>
                 <defs>
                   <linearGradient id="spendFill" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="0%" stopColor="var(--accent)" stopOpacity={0.35} />
+                    <stop offset="0%" stopColor="var(--accent)" stopOpacity={0.32} />
                     <stop offset="100%" stopColor="var(--accent)" stopOpacity={0} />
                   </linearGradient>
                 </defs>
@@ -67,10 +67,12 @@ export function SpendChart({ receipts }: { receipts: ReceiptEvent[] }) {
                 <Tooltip
                   formatter={(value) => formatLamports(Number(value))}
                   labelFormatter={(_, payload) => payload?.[0]?.payload?.label ?? ""}
+                  cursor={{ stroke: "var(--border-strong)", strokeWidth: 1 }}
                   contentStyle={{
                     background: "var(--surface-raised)",
                     border: "1px solid var(--border)",
-                    borderRadius: 10,
+                    borderRadius: 12,
+                    boxShadow: "var(--shadow-md)",
                     fontSize: 12,
                     color: "var(--foreground)",
                   }}
@@ -81,6 +83,8 @@ export function SpendChart({ receipts }: { receipts: ReceiptEvent[] }) {
                   stroke="var(--accent)"
                   strokeWidth={2}
                   fill="url(#spendFill)"
+                  animationDuration={600}
+                  animationEasing="ease-out"
                 />
               </AreaChart>
             </ResponsiveContainer>

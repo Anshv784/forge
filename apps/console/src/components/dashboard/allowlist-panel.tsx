@@ -110,7 +110,7 @@ export function AllowlistPanel({
                     animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0, y: -6 }}
                     transition={{ duration: 0.2 }}
-                    className="flex items-center justify-between gap-3 rounded-xl border border-border bg-surface-raised/50 px-3.5 py-2.5"
+                    className="flex items-center justify-between gap-3 rounded-xl border border-border bg-surface-raised/50 px-3.5 py-2.5 transition-colors duration-150 hover:border-border-strong"
                   >
                     <Address value={key} href={solscanAddressUrl(key, explorerCluster)} chars={6} />
                     {isOwner && (

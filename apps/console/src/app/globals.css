@@ -8,85 +8,102 @@
    Dark mode is primary (this is an operator console meant to sit open
    during a normal dev workflow), but light mode gets equal care rather
    than a naive inverted filter.
+
+   Refined for a tighter, more considered scale: a real elevation system
+   (four shadow tiers instead of one-off box-shadow values scattered
+   across components), a formal radius scale, and slightly higher-contrast
+   neutrals so borders and text hierarchy read crisply at a glance — the
+   kind of polish gap between "uses a dark theme" and "the dark theme was
+   tuned." Every existing --color-* / --font-* token name is unchanged, so
+   nothing consuming these classes needed to know this happened.
    --------------------------------------------------------------------- */
 
 :root {
-  --background: #faf6ee;
+  --background: #faf7f1;
   --surface: #ffffff;
   --surface-raised: #ffffff;
-  --border: #e7dfcf;
-  --border-strong: #d8cdb5;
+  --border: #e8e1d2;
+  --border-strong: #d6cbb2;
 
-  --foreground: #221c12;
-  --foreground-muted: #6b6151;
-  --foreground-subtle: #968c79;
+  --foreground: #1c1710;
+  --foreground-muted: #66594a;
+  --foreground-subtle: #9c8e78;
 
-  --accent: #b85c2c;
-  --accent-hover: #9d4c22;
+  --accent: #b5561f;
+  --accent-hover: #9a4917;
   --accent-foreground: #fff8f0;
-  --accent-tint: #f3e2d3;
+  --accent-tint: #f4e1cd;
 
-  --success: #4f7a3e;
-  --success-tint: #e4ecdd;
-  --warning: #a9781f;
-  --warning-tint: #f3e8cf;
-  --danger: #a8402f;
-  --danger-tint: #f2ded9;
-  --info: #3d7a76;
-  --info-tint: #dcece9;
+  --success: #3f7530;
+  --success-tint: #e2ecda;
+  --warning: #97690a;
+  --warning-tint: #f2e5c8;
+  --danger: #a02f1f;
+  --danger-tint: #f1dbd6;
+  --info: #2f6f6b;
+  --info-tint: #dbeae8;
+
+  --shadow-color: 28 20 8;
+  --ring-offset-color: var(--background);
 }
 
 [data-theme="dark"] {
-  --background: #14110c;
-  --surface: #1c1811;
-  --surface-raised: #241f16;
-  --border: #332a1d;
-  --border-strong: #493c28;
+  --background: #100d08;
+  --surface: #1a150e;
+  --surface-raised: #221b12;
+  --border: #2e2517;
+  --border-strong: #453722;
 
-  --foreground: #f4eee0;
-  --foreground-muted: #b7ac97;
-  --foreground-subtle: #837a67;
+  --foreground: #f7f1e4;
+  --foreground-muted: #bcab92;
+  --foreground-subtle: #7d7160;
 
-  --accent: #dd8a4e;
-  --accent-hover: #e79c67;
-  --accent-foreground: #1c1006;
-  --accent-tint: #3a2717;
+  --accent: #e08a45;
+  --accent-hover: #ea9c5c;
+  --accent-foreground: #170e04;
+  --accent-tint: #3a2614;
 
-  --success: #8fb578;
-  --success-tint: #26301e;
-  --warning: #e2b556;
-  --warning-tint: #362b14;
-  --danger: #d97a63;
-  --danger-tint: #3a2119;
-  --info: #79b3af;
-  --info-tint: #1c2f2d;
+  --success: #8fbb76;
+  --success-tint: #212c19;
+  --warning: #e3b657;
+  --warning-tint: #332711;
+  --danger: #e08670;
+  --danger-tint: #341d16;
+  --info: #7fbab5;
+  --info-tint: #172a28;
+
+  --shadow-color: 0 0 0;
+  --ring-offset-color: var(--background);
 }
 
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) {
-    --background: #14110c;
-    --surface: #1c1811;
-    --surface-raised: #241f16;
-    --border: #332a1d;
-    --border-strong: #493c28;
+    --background: #100d08;
+    --surface: #1a150e;
+    --surface-raised: #221b12;
+    --border: #2e2517;
+    --border-strong: #453722;
 
-    --foreground: #f4eee0;
-    --foreground-muted: #b7ac97;
-    --foreground-subtle: #837a67;
+    --foreground: #f7f1e4;
+    --foreground-muted: #bcab92;
+    --foreground-subtle: #7d7160;
 
-    --accent: #dd8a4e;
-    --accent-hover: #e79c67;
-    --accent-foreground: #1c1006;
-    --accent-tint: #3a2717;
+    --accent: #e08a45;
+    --accent-hover: #ea9c5c;
+    --accent-foreground: #170e04;
+    --accent-tint: #3a2614;
 
-    --success: #8fb578;
-    --success-tint: #26301e;
-    --warning: #e2b556;
-    --warning-tint: #362b14;
-    --danger: #d97a63;
-    --danger-tint: #3a2119;
-    --info: #79b3af;
-    --info-tint: #1c2f2d;
+    --success: #8fbb76;
+    --success-tint: #212c19;
+    --warning: #e3b657;
+    --warning-tint: #332711;
+    --danger: #e08670;
+    --danger-tint: #341d16;
+    --info: #7fbab5;
+    --info-tint: #172a28;
+
+    --shadow-color: 0 0 0;
+    --ring-offset-color: var(--background);
   }
 }
 
@@ -120,6 +137,33 @@
   --font-display: var(--font-fraunces);
 }
 
+/* Elevation scale — four tiers, all tinted toward --shadow-color instead
+   of pure black, so shadows read as "this surface is lifted" rather than
+   "there's a gray smudge under it." Applied via utility classes below
+   rather than inlined per component, so every card/modal/toast in the app
+   shares exactly the same four depths. */
+:root {
+  --shadow-xs: 0 1px 2px rgb(var(--shadow-color) / 0.06);
+  --shadow-sm: 0 1px 2px rgb(var(--shadow-color) / 0.05), 0 2px 6px rgb(var(--shadow-color) / 0.06);
+  --shadow-md:
+    0 2px 4px rgb(var(--shadow-color) / 0.04), 0 8px 20px rgb(var(--shadow-color) / 0.08);
+  --shadow-lg:
+    0 4px 8px rgb(var(--shadow-color) / 0.05), 0 20px 48px -12px rgb(var(--shadow-color) / 0.35);
+}
+
+.shadow-elevation-xs {
+  box-shadow: var(--shadow-xs);
+}
+.shadow-elevation-sm {
+  box-shadow: var(--shadow-sm);
+}
+.shadow-elevation-md {
+  box-shadow: var(--shadow-md);
+}
+.shadow-elevation-lg {
+  box-shadow: var(--shadow-lg);
+}
+
 * {
   border-color: var(--border);
 }
@@ -132,6 +176,18 @@ body {
   background: var(--background);
   color: var(--foreground);
   font-feature-settings: "cv11", "ss01";
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+/* Smooth, deliberate theme switching instead of an instant flip —
+   short enough to feel responsive, long enough to read as intentional. */
+body,
+.transition-theme {
+  transition:
+    background-color 0.18s ease,
+    border-color 0.18s ease,
+    color 0.18s ease;
 }
 
 ::selection {
@@ -155,6 +211,29 @@ body {
   background: var(--foreground-subtle);
 }
 
+/* A soft, very low-opacity radial glow used behind hero/empty-state
+   sections — the same texture Arc/Linear lean on to avoid a flat page,
+   without resorting to a literal gradient background. */
+.ambient-glow {
+  position: relative;
+}
+.ambient-glow::before {
+  content: "";
+  position: absolute;
+  inset: -1px;
+  z-index: 0;
+  pointer-events: none;
+  background: radial-gradient(
+    120% 140% at 15% -10%,
+    color-mix(in srgb, var(--accent) 14%, transparent) 0%,
+    transparent 60%
+  );
+}
+.ambient-glow > * {
+  position: relative;
+  z-index: 1;
+}
+
 @keyframes shell-pulse {
   0%,
   100% {
@@ -166,6 +245,25 @@ body {
 }
 .animate-shell-pulse {
   animation: shell-pulse 2s ease-in-out infinite;
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+.animate-shimmer {
+  background-image: linear-gradient(
+    100deg,
+    transparent 30%,
+    color-mix(in srgb, var(--foreground) 6%, transparent) 45%,
+    transparent 60%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.6s ease-in-out infinite;
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -190,10 +288,12 @@ body {
   height: 40px !important;
   font-size: 0.875rem !important;
   font-weight: 500 !important;
-  transition: background-color 0.15s ease, transform 0.1s ease !important;
+  letter-spacing: -0.006em !important;
+  transition: background-color 0.15s ease, transform 0.1s ease, box-shadow 0.15s ease !important;
 }
 .wallet-adapter-button:not([disabled]):hover {
   background-color: var(--accent-hover) !important;
+  box-shadow: var(--shadow-sm) !important;
 }
 .wallet-adapter-button:not([disabled]):active {
   transform: scale(0.98);
@@ -204,9 +304,9 @@ body {
 .wallet-adapter-modal-wrapper {
   background: var(--surface-raised) !important;
   color: var(--foreground) !important;
-  border-radius: 16px !important;
+  border-radius: 18px !important;
   border: 1px solid var(--border) !important;
-  box-shadow: 0 20px 60px -20px rgba(0, 0, 0, 0.45) !important;
+  box-shadow: var(--shadow-lg) !important;
 }
 .wallet-adapter-modal-title {
   font-family: var(--font-display) !important;
@@ -226,16 +326,18 @@ body {
 }
 .wallet-adapter-modal-overlay {
   background: rgba(10, 8, 5, 0.6) !important;
-  backdrop-filter: blur(4px);
+  backdrop-filter: blur(6px);
 }
 .wallet-adapter-dropdown-list {
   background: var(--surface-raised) !important;
   border: 1px solid var(--border) !important;
-  border-radius: 12px !important;
+  border-radius: 14px !important;
+  box-shadow: var(--shadow-md) !important;
 }
 .wallet-adapter-dropdown-list-item {
   color: var(--foreground) !important;
   font-family: var(--font-sans) !important;
+  transition: background-color 0.12s ease !important;
 }
 .wallet-adapter-dropdown-list-item:not([disabled]):hover {
   background-color: var(--accent-tint) !important;

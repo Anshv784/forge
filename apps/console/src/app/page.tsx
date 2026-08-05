@@ -3,7 +3,7 @@
 import { useWallet } from "@solana/wallet-adapter-react";
 import { PublicKey } from "@solana/web3.js";
 import { getAssociatedTokenAddressSync } from "@solana/spl-token";
-import { motion, type Variants } from "framer-motion";
+import { AnimatePresence, motion, type Variants } from "framer-motion";
 import { AlertTriangle, ShieldOff } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import { Header } from "@/components/layout/header";
@@ -160,11 +160,11 @@ export default function Home() {
   return (
     <>
       <Header />
-      <main className="mx-auto w-full max-w-6xl flex-1 px-6 py-8">
+      <main className="mx-auto w-full max-w-6xl flex-1 px-6 py-10">
         {!publicKey ? (
           <ConnectPrompt />
         ) : (
-          <div className="space-y-6">
+          <div className="space-y-7">
             <OwnerSelector
               ownerInput={ownerInput}
               onOwnerInputChange={setOwnerInput}
@@ -174,12 +174,20 @@ export default function Home() {
               canReset={ownerInput !== publicKey.toBase58()}
             />
 
-            {actionError && (
-              <div className="flex items-start gap-2 rounded-xl border border-danger/30 bg-danger-tint px-4 py-3 text-[13px] text-danger">
-                <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0" />
-                <span className="wrap-break-word">{actionError}</span>
-              </div>
-            )}
+            <AnimatePresence>
+              {actionError && (
+                <motion.div
+                  initial={{ opacity: 0, y: -6, height: 0 }}
+                  animate={{ opacity: 1, y: 0, height: "auto" }}
+                  exit={{ opacity: 0, height: 0 }}
+                  transition={{ duration: 0.2 }}
+                  className="flex items-start gap-2.5 overflow-hidden rounded-xl border border-danger/30 bg-danger-tint px-4 py-3 text-[13px] leading-relaxed text-danger"
+                >
+                  <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0" />
+                  <span className="wrap-break-word">{actionError}</span>
+                </motion.div>
+              )}
+            </AnimatePresence>
 
             {loading && !policy ? (
               <div className="space-y-6">
@@ -202,7 +210,7 @@ export default function Home() {
                   icon={<ShieldOff className="h-5 w-5" />}
                   title="No policy found for this owner + agent index"
                   description={`Nothing is initialized yet on ${cluster.label}.`}
-                  className="rounded-2xl border border-border bg-surface py-20"
+                  className="rounded-2xl border border-border bg-surface py-20 shadow-elevation-xs"
                 />
               )
             ) : (
@@ -263,9 +271,11 @@ export default function Home() {
                   <ActivityFeed receipts={receipts} loading={receiptsLoading} explorerCluster={cluster.explorerCluster} />
                 </motion.div>
 
-                <motion.div initial="hidden" animate="show" custom={0.2} variants={fadeUp} className="space-y-4">
+                <motion.div initial="hidden" animate="show" custom={0.2} variants={fadeUp} className="space-y-4 pt-2">
                   <div className="flex items-center gap-3">
-                    <h2 className="font-display text-[15px] font-medium text-foreground">Manage</h2>
+                    <h2 className="font-display text-[15px] font-medium tracking-[-0.011em] text-foreground">
+                      Manage
+                    </h2>
                     <div className="h-px flex-1 bg-border" />
                   </div>
 
@@ -311,8 +321,10 @@ export default function Home() {
           </div>
         )}
       </main>
-      <footer className="mx-auto w-full max-w-6xl px-6 py-8 text-center text-[12px] text-foreground-subtle">
-        Carapace — on-chain enforced guardrails for autonomous ZeroClaw agents.
+      <footer className="border-t border-border">
+        <div className="mx-auto w-full max-w-6xl px-6 py-7 text-center text-[12px] text-foreground-subtle">
+          Carapace — on-chain enforced guardrails for autonomous ZeroClaw agents.
+        </div>
       </footer>
     </>
   );

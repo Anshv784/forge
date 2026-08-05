@@ -24,9 +24,9 @@ function CopyableSecret({ label, value }: { label: string; value: string }) {
             setCopied(true);
             setTimeout(() => setCopied(false), 1200);
           }}
-          className="shrink-0 text-foreground-subtle hover:text-accent"
+          className="shrink-0 rounded text-foreground-subtle transition-colors duration-150 hover:text-accent focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-accent/50"
         >
-          {copied ? <Check className="h-3.5 w-3.5" /> : <Copy className="h-3.5 w-3.5" />}
+          {copied ? <Check className="h-3.5 w-3.5 text-success" /> : <Copy className="h-3.5 w-3.5" />}
         </button>
       </div>
     </div>
@@ -93,7 +93,7 @@ export function InitPolicyForm({
     : null;
 
   return (
-    <Card className="text-left">
+    <Card className="ambient-glow mx-auto max-w-xl text-left shadow-elevation-sm">
       <CardHeader>
         <div>
           <CardTitle>Create your policy</CardTitle>
@@ -114,10 +114,10 @@ export function InitPolicyForm({
           </div>
           {delegateKeypair && delegateSecretHex && (
             <div className="space-y-2 rounded-xl border border-warning/30 bg-warning-tint p-3">
-              <div className="flex items-start gap-2 text-[12px] text-warning">
+              <div className="flex items-start gap-2 text-[12px] leading-relaxed text-warning">
                 <AlertTriangle className="mt-0.5 h-3.5 w-3.5 shrink-0" />
                 <span>
-                  Save the secret key now — it's shown only once and never leaves your browser. Put it in your
+                  Save the secret key now — it&apos;s shown only once and never leaves your browser. Put it in your
                   ZeroClaw config as <code className="font-mono">delegate_secret_key</code>.
                 </span>
               </div>
