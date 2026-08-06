@@ -10,6 +10,7 @@ use serde::Deserialize;
 use serde_json::json;
 use solana_core::carapace::{allowlist_entry_pda, policy_pda, AssetKind};
 use solana_core::dry_run::evaluate;
+use solana_core::format::parse_amount;
 use solana_core::pubkey::Pubkey;
 use solana_core::rpc;
 use std::time::{SystemTime, UNIX_EPOCH};
@@ -25,7 +26,10 @@ struct Args {
     agent_index: u16,
     /// "sol" or "spl".
     asset: String,
-    amount: u64,
+    /// Decimal amount in human units — SOL for `asset: "sol"`, whole tokens
+    /// for `asset: "spl"` (e.g. `"1"`, `"0.5"`) — NOT lamports or base
+    /// units.
+    amount: String,
     /// The recipient **wallet** address — not a token account. For SPL,
     /// the on-chain allow-list is keyed on the token account's *owner* (see
     /// `execute.rs`'s `ExecuteTransferSpl` accounts), so this must match
@@ -129,6 +133,11 @@ fn run(args_json: &str) -> Result<String, String> {
         "spl" => AssetKind::Spl,
         other => return Err(format!("asset must be \"sol\" or \"spl\", got {other:?}")),
     };
+    let decimals = match asset {
+        AssetKind::Sol => 9,
+        AssetKind::Spl => 6,
+    };
+    let amount = parse_amount(&args.amount, decimals)?;
 
     let (policy_address, _bump) = policy_pda(&program_id, &owner, args.agent_index);
     let (allowlist_entry, _bump) = allowlist_entry_pda(&program_id, &policy_address, &destination);
@@ -152,7 +161,7 @@ fn run(args_json: &str) -> Result<String, String> {
         .map(|d| d.as_secs() as i64)
         .unwrap_or(0);
 
-    let verdict = evaluate(&policy, is_allowlisted, now, asset, args.amount);
+    let verdict = evaluate(&policy, is_allowlisted, now, asset, amount);
 
     let (max_daily_field, remaining_field, threshold_field) = match asset {
         AssetKind::Sol => ("max_daily_lamports", "remaining_today_lamports", "approval_threshold_lamports"),
@@ -230,7 +239,7 @@ impl ToolGuest for Component {
                 "owner": {"type": "string", "description": "The policy owner's wallet address (base58)"},
                 "agent_index": {"type": "integer", "default": 0},
                 "asset": {"type": "string", "enum": ["sol", "spl"]},
-                "amount": {"type": "integer", "description": "Base units: lamports for SOL, smallest unit for SPL"},
+                "amount": {"type": "string", "description": "Decimal amount in SOL (for asset=\"sol\") or whole tokens (for asset=\"spl\"), e.g. \"1\" or \"0.5\" — NOT lamports or base units, do not convert it yourself"},
                 "destination": {"type": "string", "description": "Recipient WALLET address (base58) — not a token account, even for SPL"}
             },
             "required": ["rpc_url", "program_id", "owner", "asset", "amount", "destination"]

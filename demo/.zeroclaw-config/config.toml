@@ -1,93 +1,210 @@
 schema_version = 3
 
-default_provider = "openai"
-
 [providers.models.openai.default]
 uri = "https://api.openai.com/v1"
 model = "gpt-4o-mini"
 temperature = 0.2
 
+[risk_profiles.default.delegation_policy]
+mode = "forbidden"
+
+# The [REDACTED_HIGH_ENTROPY_TOKEN] substitutions were never the model's
+# doing (switching models here never should have mattered, and didn't) —
+# this is ZeroClaw's own outbound leak detector, which scans every message
+# before it's sent and heuristically redacts any long, high-Shannon-entropy
+# token as a probable leaked credential. Solana addresses/signatures are
+# base58 and easily cross that threshold. Disabling only the entropy
+# heuristic keeps every deterministic, low-false-positive check (Stripe,
+# AWS, OpenAI, Anthropic, GitHub, Slack, JWTs, DB connection URLs, bot
+# tokens) fully active — a real leaked API key or bot token still gets
+# caught and redacted, only the "any random-looking string" guess is off.
+[security.leak_detection]
+high_entropy_tokens = false
+
+[agents.carapace_demo.a2a]
+exposed_skills = []
+published = false
+
+[agents.carapace_demo.identity]
+format = "openclaw"
+
+[agents.carapace_demo.memory]
+backend = "sqlite"
+
+# Disabled: this runs a separate, small classifier model *before* the real
+# agent turn to decide whether to even respond — with no tool access and no
+# real policy data, just the raw conversation text. It guessed "exceeds your
+# daily limit" on a 1 SOL transfer when 1.765 SOL was actually remaining
+# (the real constraint was the 0.5 SOL per-transaction cap, which it never
+# checked and mislabeled). That's an LLM's guess overriding what the chain
+# would have said, which is the exact failure mode Carapace exists to
+# prevent — for a single-user DM bot with no group-chat noise to filter,
+# this precheck has no upside, so every message now goes straight to the
+# real agent turn, which actually calls the tools and reports the real,
+# on-chain-verified outcome.
+[agents.carapace_demo.precheck]
+enabled = false
+timeout_secs = 5
+
+[agents.carapace_demo.workspace]
+read_memory_from = []
+unrestricted_filesystem = false
+
+[peer_groups.telegram_default]
+admin_for_agent_scope = false
+agents = []
+channel = "telegram.default"
+external_peers = ["5418654150"]
+ignore = []
+output_modality = "mirror"
+
+[[plugins.entries]]
+name = "carapace_policy_status"
+
+[agents.carapace_demo.workspace.access]
+
+[plugins.entries.config]
+
 [skill_bundles.carapace]
+exclude = []
+include = []
 
 [risk_profiles.default]
+allowed_commands = ["git", "npm", "cargo", "ls", "cat", "grep", "find", "echo", "pwd", "wc", "head", "tail", "date", "df", "du", "uname", "uptime", "hostname", "python", "python3", "pip", "node"]
+allowed_roots = []
+allowed_tools = []
+always_ask = []
+auto_approve = ["file_read", "memory_recall", "web_search_tool", "web_fetch", "calculator", "glob_search", "content_search", "image_info", "weather", "tool_search", "browser", "browser_open"]
+block_high_risk_commands = true
+excluded_tools = []
+firejail_args = []
+forbidden_paths = ["/etc", "/root", "/home", "/usr", "/bin", "/sbin", "/lib", "/opt", "/boot", "/dev", "/proc", "/sys", "/var", "/tmp", "~/.ssh", "~/.gnupg", "~/.aws", "~/.config"]
+level = "supervised"
+require_approval_for_medium_risk = true
+shell_env_passthrough = []
+workspace_only = true
+
+[[plugins.entries]]
+name = "carapace_dry_run"
 
 [agents.carapace_demo]
 model_provider = "openai.default"
 risk_profile = "default"
 skill_bundles = ["carapace"]
-channels = ["discord.default"]
+channels = ["discord.default", "telegram.default"]
 cron_jobs = ["carapace_nightly_receipts"]
+acp_enable_mcp = false
+classifier_provider = ""
+delegate_same_risk_profile = true
+delegates = []
+enabled = true
+knowledge_bundles = []
+mcp_bundles = []
+runtime_profile = ""
+summary_provider = ""
+transcription_provider = ""
+tts_provider = ""
+
+[plugins.entries.config]
 
 [channels.discord.default]
 enabled = true
 mention_only = false
 stream_mode = "partial"
+approval_timeout_secs = 300
+archive = false
+bot_token = ""
+channel_ids = []
+draft_update_interval_ms = 1000
+excluded_tools = []
+guild_ids = []
+interrupt_on_new_message = false
+listen_to_bots = false
+multi_message_delay_ms = 800
+reaction_notifications = "off"
+reply_min_interval_secs = 0
+reply_queue_depth_max = 0
+slash_command_scope = "global"
+slash_commands = false
+stall_timeout_secs = 0
+
+[[plugins.entries]]
+name = "carapace_list_receipts"
+
+[channels.telegram.default]
+enabled = true
+mention_only = false
+stream_mode = "partial"
+api_base_url = "https://api.telegram.org"
+approval_timeout_secs = 120
+bot_token = ""
+draft_update_interval_ms = 1000
+excluded_tools = []
+interrupt_on_new_message = false
+reply_min_interval_secs = 0
+reply_queue_depth_max = 0
+
+[plugins.entries.config]
 
 [peer_groups.owner]
 channel = "discord.default"
 agents = ["carapace_demo"]
 external_peers = ["1374617356474777711"]
+admin_for_agent_scope = false
+ignore = []
+output_modality = "mirror"
+
+[[plugins.entries]]
+name = "carapace_propose_intent"
 
 # Nightly receipts summary. Runs at 00:00 UTC. `delivery.to` must be a real
 # Discord CHANNEL id (not the user id above) — right-click the channel in
 # Discord with Developer Mode on -> Copy Channel ID -> paste it below.
+
 [cron.carapace_nightly_receipts]
 name = "Carapace nightly receipts"
 job_type = "agent"
 enabled = true
 uses_memory = false
 prompt = """
-Post the nightly Carapace summary for owner 3sroGUjeAAtMDFw4GNPH9y9uqnBNvc4QpLBxzpzmhsPB, \
-agent_index 0, at https://api.devnet.solana.com, program GuZ6yoSDkTcYh2PKAeoDdb51ZhP9i7pRhL6MGrZXST8L.
+Post the nightly Carapace summary for owner 3sroGUjeAAtMDFw4GNPH9y9uqnBNvc4QpLBxzpzmhsPB, agent_index 0, at https://api.devnet.solana.com, program GuZ6yoSDkTcYh2PKAeoDdb51ZhP9i7pRhL6MGrZXST8L.
 
 1. Call carapace_policy_status for the current caps and remaining budget.
 2. Call carapace_list_receipts with limit 25 to cover the last day's activity.
-3. Add up the exact lamport amounts from the receipts' TransferExecuted \
-entries yourself, one at a time, then convert the total to SOL once at the \
-end — do not estimate or round partial sums along the way. Getting this \
-sum wrong is the same class of mistake as a payment unit-conversion error: \
-it will not be caught by anything else, so slow down and double check it.
+3. Add up the exact lamport amounts from the receipts' TransferExecuted entries yourself, one at a time, then convert the total to SOL once at the end — do not estimate or round partial sums along the way. Getting this sum wrong is the same class of mistake as a payment unit-conversion error: it will not be caught by anything else, so slow down and double check it.
 4. Post exactly one Discord message in this format:
 
 **Carapace daily summary — <today's date>**
-Paid out today: <sum of TransferExecuted amounts from receipts, in SOL, or \
-"Nothing paid out today." if there were none>
+Paid out today: <sum of TransferExecuted amounts from receipts, in SOL, or "Nothing paid out today." if there were none>
 Remaining budget: <remaining_today_lamports from policy_status, in SOL> of <max_daily_lamports, in SOL>
-On-chain refusals: <count recent_failures> — <list each one's reason, or \
-"None recorded." if empty>. If this is empty, do NOT imply nothing was ever \
-refused — most refusals are caught by simulation before they ever reach the \
-chain, so an empty list here is normal, not necessarily a quiet day.
-Awaiting your approval: <list each pending_intents entry as "<amount> SOL to \
-<destination> (proposed <relative time>)", or "Nothing waiting on you." if empty>
+On-chain refusals: <count recent_failures> — <list each one's reason, or "None recorded." if empty>. If this is empty, do NOT imply nothing was ever refused — most refusals are caught by simulation before they ever reach the chain, so an empty list here is normal, not necessarily a quiet day.
+Awaiting your approval: <list each pending_intents entry as "<amount> SOL to <destination> (proposed <relative time>)", or "Nothing waiting on you." if empty>
 
-On a day with zero receipts, zero failures, and zero pending intents, still \
-post the message above with every line filled in as "Nothing ... today" — a \
-short, clearly-worded quiet report, not silence. This is the expected, normal \
-case most nights.
+On a day with zero receipts, zero failures, and zero pending intents, still post the message above with every line filled in as "Nothing ... today" — a short, clearly-worded quiet report, not silence. This is the expected, normal case most nights.
 
-Never output the literal word NO_REPLY under any circumstance, in any form — \
-it suppresses delivery entirely, and this job's whole point is a message \
-every single night, quiet or not.
+Never output the literal word NO_REPLY under any circumstance, in any form — it suppresses delivery entirely, and this job's whole point is a message every single night, quiet or not.
 """
+shell_output_format = "wrapped"
+
+[plugins.entries.config]
+delegate_secret_key = ""
 
 [cron.carapace_nightly_receipts.schedule]
 kind = "cron"
 expr = "0 0 * * *"
 tz = "UTC"
 
+[[plugins.entries]]
+name = "carapace_execute_transfer"
+
 [cron.carapace_nightly_receipts.delivery]
 mode = "announce"
 channel = "discord"
 to = "REPLACE_WITH_YOUR_DISCORD_CHANNEL_ID"
+best_effort = true
 
-[autonomy]
-allowed_tools = [
-    "carapace_policy_status", "carapace_list_receipts", "carapace_dry_run",
-    "carapace_propose_intent", "carapace_execute_transfer"
-]
-auto_approve = [
-    "carapace_policy_status", "carapace_list_receipts", "carapace_dry_run", "carapace_propose_intent"
-]
+[plugins.entries.config]
+delegate_secret_key = ""
 
 [plugins]
 enabled = true
@@ -95,20 +212,5 @@ enabled = true
 [plugins.security]
 signature_mode = "strict"
 trusted_publisher_keys = ["d67e375ed163d6ae4b67ec55b2822bb97e657d4dbb723cc9abcd060fb4aac86a"]
-
-[[plugins.entries]]
-name = "carapace_policy_status"
-
-[[plugins.entries]]
-name = "carapace_dry_run"
-
-[[plugins.entries]]
-name = "carapace_list_receipts"
-
-[[plugins.entries]]
-name = "carapace_propose_intent"
-
-[[plugins.entries]]
-name = "carapace_execute_transfer"
 
 [skill_bundles]

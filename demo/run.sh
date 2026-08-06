@@ -18,6 +18,7 @@ fi
 if [ ! -f "$SECRETS_FILE" ]; then
   echo "Missing $SECRETS_FILE — create it with:"
   echo "  DISCORD_BOT_TOKEN=..."
+  echo "  TELEGRAM_BOT_TOKEN=... (from @BotFather, optional)"
   echo "  OPENAI_API_KEY=..."
   echo "  CARAPACE_DELEGATE_SECRET_KEY=... (from manual/init-devnet-policy.js or manual/rotate-delegate.js)"
   exit 1
@@ -28,6 +29,7 @@ source "$SECRETS_FILE"
 
 export ZEROCLAW_providers__models__openai__default__api_key="$OPENAI_API_KEY"
 export ZEROCLAW_channels__discord__default__bot_token="$DISCORD_BOT_TOKEN"
+export ZEROCLAW_channels__telegram__default__bot_token="$TELEGRAM_BOT_TOKEN"
 export ZEROCLAW_plugins__entries__carapace_propose_intent__config__delegate_secret_key="$CARAPACE_DELEGATE_SECRET_KEY"
 export ZEROCLAW_plugins__entries__carapace_execute_transfer__config__delegate_secret_key="$CARAPACE_DELEGATE_SECRET_KEY"
 

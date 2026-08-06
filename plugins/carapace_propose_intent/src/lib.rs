@@ -10,6 +10,7 @@ use serde::Deserialize;
 use serde_json::{json, Value};
 use sha2::{Digest, Sha256};
 use solana_core::carapace::{intent_pda, policy_pda, propose_intent_instruction, AssetKind, ProposeIntentParams};
+use solana_core::format::parse_amount;
 use solana_core::pubkey::Pubkey;
 use solana_core::{build_and_sign_transaction, rpc, Keypair};
 
@@ -38,8 +39,12 @@ struct Args {
     config: PluginConfig,
     /// "sol" or "spl".
     asset: String,
-    /// Base units: lamports for SOL, the mint's smallest unit for SPL.
-    amount: u64,
+    /// Decimal amount in human units — SOL for `asset: "sol"`, whole tokens
+    /// for `asset: "spl"` (e.g. `"1"`, `"0.5"`) — NOT lamports or base
+    /// units. Converted to the exact on-chain integer here, not by the
+    /// caller, so a unit-conversion slip can't silently propose the wrong
+    /// amount.
+    amount: String,
     /// The destination wallet (must already be on the policy's allow-list).
     destination: String,
     /// Human-readable description of the action, e.g. "pay invoice #42 to
@@ -156,6 +161,11 @@ fn run(args_json: &str) -> Result<String, String> {
         "spl" => AssetKind::Spl,
         other => return Err(format!("asset must be \"sol\" or \"spl\", got {other:?}")),
     };
+    let decimals = match asset {
+        AssetKind::Sol => 9,
+        AssetKind::Spl => 6,
+    };
+    let amount = parse_amount(&args.amount, decimals)?;
     let delegate = Keypair::from_secret_bytes(&hex_decode_32(&args.config.delegate_secret_key)?);
 
     let (policy_address, _bump) = policy_pda(&program_id, &owner, args.agent_index);
@@ -188,7 +198,7 @@ fn run(args_json: &str) -> Result<String, String> {
         &intent_address,
         ProposeIntentParams {
             asset,
-            amount: args.amount,
+            amount,
             destination,
             action_hash,
             ttl_seconds: args.ttl_seconds,
@@ -210,6 +220,7 @@ fn run(args_json: &str) -> Result<String, String> {
         "signature": signature,
         "asset": args.asset,
         "amount": args.amount,
+        "amount_base_units": amount,
         "destination": args.destination,
         "action_description": args.action_description,
         "expires_in_seconds": args.ttl_seconds,
@@ -249,7 +260,7 @@ impl ToolGuest for Component {
                 "owner": {"type": "string", "description": "The policy owner's wallet address (base58)"},
                 "agent_index": {"type": "integer", "default": 0},
                 "asset": {"type": "string", "enum": ["sol", "spl"]},
-                "amount": {"type": "integer", "description": "Base units: lamports for SOL, smallest unit for SPL"},
+                "amount": {"type": "string", "description": "Decimal amount in SOL (for asset=\"sol\") or whole tokens (for asset=\"spl\"), e.g. \"1\" or \"0.5\" — NOT lamports or base units, do not convert it yourself"},
                 "destination": {"type": "string", "description": "Recipient wallet address (base58); must already be allow-listed"},
                 "action_description": {"type": "string", "description": "Human-readable reason for this payment, shown to the approver"},
                 "ttl_seconds": {"type": "integer", "default": 3600, "description": "How long the approval window stays open"}

@@ -12,6 +12,7 @@ use solana_core::carapace::{
     allowlist_entry_pda, associated_token_address, execute_transfer_sol_instruction,
     execute_transfer_spl_instruction, intent_pda, policy_pda, sol_vault_pda, token_vault_authority_pda,
 };
+use solana_core::format::parse_amount;
 use solana_core::pubkey::Pubkey;
 use solana_core::{build_and_sign_transaction, rpc, Keypair};
 
@@ -36,7 +37,13 @@ struct Args {
     config: PluginConfig,
     /// "sol" or "spl".
     asset: String,
-    amount: u64,
+    /// Decimal amount in human units — SOL for `asset: "sol"`, whole tokens
+    /// for `asset: "spl"` (e.g. `"1"`, `"0.5"`) — NOT lamports or base
+    /// units. Must match whatever amount was used in the corresponding
+    /// carapace_propose_intent call when intent_nonce is set, since the
+    /// on-chain program checks the executed amount against the Intent
+    /// exactly.
+    amount: String,
     destination: String,
     /// Required when this amount is at/above the policy's approval
     /// threshold — the nonce of a previously proposed, now-Approved Intent
@@ -138,6 +145,12 @@ fn run(args_json: &str) -> Result<String, String> {
     let program_id = Pubkey::from_base58(&args.program_id).map_err(|_| "invalid program_id".to_string())?;
     let owner = Pubkey::from_base58(&args.owner).map_err(|_| "invalid owner".to_string())?;
     let destination = Pubkey::from_base58(&args.destination).map_err(|_| "invalid destination".to_string())?;
+    let decimals = match args.asset.to_lowercase().as_str() {
+        "sol" => 9,
+        "spl" => 6,
+        other => return Err(format!("asset must be \"sol\" or \"spl\", got {other:?}")),
+    };
+    let amount = parse_amount(&args.amount, decimals)?;
     let delegate = Keypair::from_secret_bytes(&hex_decode_32(&args.config.delegate_secret_key)?);
 
     let (policy_address, _bump) = policy_pda(&program_id, &owner, args.agent_index);
@@ -172,7 +185,7 @@ fn run(args_json: &str) -> Result<String, String> {
                 &destination,
                 &allowlist_entry,
                 intent_address.as_ref(),
-                args.amount,
+                amount,
             )
         }
         "spl" => {
@@ -189,10 +202,10 @@ fn run(args_json: &str) -> Result<String, String> {
                 &destination_token_account,
                 &allowlist_entry,
                 intent_address.as_ref(),
-                args.amount,
+                amount,
             )
         }
-        other => return Err(format!("asset must be \"sol\" or \"spl\", got {other:?}")),
+        _ => unreachable!("asset already validated to be \"sol\" or \"spl\" above"),
     };
 
     // The delegate is also the transaction fee payer here — unlike
@@ -212,6 +225,7 @@ fn run(args_json: &str) -> Result<String, String> {
         "signature": signature,
         "asset": args.asset,
         "amount": args.amount,
+        "amount_base_units": amount,
         "destination": args.destination,
         "used_intent_nonce": args.intent_nonce,
     })
@@ -250,7 +264,7 @@ impl ToolGuest for Component {
                 "owner": {"type": "string", "description": "The policy owner's wallet address (base58)"},
                 "agent_index": {"type": "integer", "default": 0},
                 "asset": {"type": "string", "enum": ["sol", "spl"]},
-                "amount": {"type": "integer", "description": "Base units: lamports for SOL, smallest unit for SPL"},
+                "amount": {"type": "string", "description": "Decimal amount in SOL (for asset=\"sol\") or whole tokens (for asset=\"spl\"), e.g. \"1\" or \"0.5\" — NOT lamports or base units, do not convert it yourself"},
                 "destination": {"type": "string", "description": "Recipient wallet address (base58); must already be allow-listed"},
                 "intent_nonce": {"type": "integer", "description": "Nonce of a matching, Approved Intent — required above the approval threshold"}
             },

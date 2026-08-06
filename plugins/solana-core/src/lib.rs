@@ -12,6 +12,7 @@ pub mod discriminator;
 pub mod dry_run;
 pub mod error_translate;
 pub mod events;
+pub mod format;
 pub mod instruction;
 pub mod keypair;
 pub mod message;

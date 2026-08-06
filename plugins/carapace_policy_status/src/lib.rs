@@ -9,6 +9,7 @@ use borsh::BorshDeserialize;
 use serde::Deserialize;
 use serde_json::json;
 use solana_core::carapace::policy_pda;
+use solana_core::format::format_amount;
 use solana_core::pubkey::Pubkey;
 use solana_core::rpc;
 
@@ -115,7 +116,51 @@ fn run(args_json: &str) -> Result<String, String> {
     let policy = solana_core::carapace::Policy::try_from_slice(&account_data)
         .map_err(|e| format!("failed to decode Policy account (wrong address, or account not yet initialized?): {e}"))?;
 
+    let sol_remaining = policy.max_daily_lamports.saturating_sub(policy.spent_today_lamports);
+    let spl_remaining = policy.max_daily_spl.saturating_sub(policy.spent_today_spl);
+    let sol_amt = |lamports: u64| format_amount(lamports, 9);
+    // 6 decimals matches the fixed assumption used elsewhere in this
+    // submission (apps/console's SPL_DECIMALS) rather than an extra RPC
+    // round-trip to fetch the mint's actual decimals for display purposes.
+    let spl_amt = |base_units: u64| format_amount(base_units, 6);
+
+    // Pre-formatted, ready-to-relay text. Addresses and signatures on Solana
+    // are long, random-looking base58 strings that some LLMs reflexively
+    // treat as if they were leaked credentials and redact even when told
+    // not to — composing the full human-facing summary here, in code, and
+    // having the calling agent relay it verbatim (same pattern already used
+    // for on-chain refusal text) sidesteps that: the model is asked to print
+    // a literal string, not to decide whether a value is safe to repeat.
+    let summary = format!(
+        "Policy {policy_address}\n\
+         Owner: {owner}\n\
+         Delegate: {delegate}\n\
+         Paused: {paused}\n\
+         \n\
+         SOL — per-tx cap {sol_per_tx} SOL, daily cap {sol_daily} SOL, spent today {sol_spent} SOL, remaining today {sol_remaining} SOL, approval required above {sol_threshold} SOL\n\
+         SPL (mint {spl_mint}) — per-tx cap {spl_per_tx}, daily cap {spl_daily}, spent today {spl_spent}, remaining today {spl_remaining}, approval required above {spl_threshold}\n\
+         \n\
+         Executed transfers so far: {total_executed}",
+        policy_address = policy_address.to_base58(),
+        owner = policy.owner.to_base58(),
+        delegate = policy.delegate.to_base58(),
+        paused = policy.paused,
+        sol_per_tx = sol_amt(policy.max_per_tx_lamports),
+        sol_daily = sol_amt(policy.max_daily_lamports),
+        sol_spent = sol_amt(policy.spent_today_lamports),
+        sol_remaining = sol_amt(sol_remaining),
+        sol_threshold = sol_amt(policy.approval_threshold_lamports),
+        spl_mint = policy.spl_mint.to_base58(),
+        spl_per_tx = spl_amt(policy.max_per_tx_spl),
+        spl_daily = spl_amt(policy.max_daily_spl),
+        spl_spent = spl_amt(policy.spent_today_spl),
+        spl_remaining = spl_amt(spl_remaining),
+        spl_threshold = spl_amt(policy.approval_threshold_spl),
+        total_executed = policy.total_executed_count,
+    );
+
     Ok(json!({
+        "summary": summary,
         "policy_address": policy_address.to_base58(),
         "owner": policy.owner.to_base58(),
         "delegate": policy.delegate.to_base58(),
@@ -125,14 +170,14 @@ fn run(args_json: &str) -> Result<String, String> {
             "max_per_tx_lamports": policy.max_per_tx_lamports,
             "max_daily_lamports": policy.max_daily_lamports,
             "spent_today_lamports": policy.spent_today_lamports,
-            "remaining_today_lamports": policy.max_daily_lamports.saturating_sub(policy.spent_today_lamports),
+            "remaining_today_lamports": sol_remaining,
             "approval_threshold_lamports": policy.approval_threshold_lamports,
         },
         "spl": {
             "max_per_tx_base_units": policy.max_per_tx_spl,
             "max_daily_base_units": policy.max_daily_spl,
             "spent_today_base_units": policy.spent_today_spl,
-            "remaining_today_base_units": policy.max_daily_spl.saturating_sub(policy.spent_today_spl),
+            "remaining_today_base_units": spl_remaining,
             "approval_threshold_base_units": policy.approval_threshold_spl,
         },
         "next_intent_nonce": policy.next_intent_nonce,
